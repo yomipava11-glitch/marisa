@@ -1,0 +1,10 @@
+src/components/AiAssistant.tsx(54,31): error TS6133: 'user' is declared but its value is never read.
+src/components/AiAssistant.tsx(152,52): error TS2322: Type '(retryCount?: number) => Promise<void>' is not assignable to type 'MouseEventHandler<HTMLButtonElement>'.
+  Types of parameters 'retryCount' and 'event' are incompatible.
+    Type 'MouseEvent<HTMLButtonElement, MouseEvent>' is not assignable to type 'number'.
+src/components/AiAssistant.tsx(172,33): error TS2322: Type '(retryCount?: number) => Promise<void>' is not assignable to type 'MouseEventHandler<HTMLButtonElement>'.
+  Types of parameters 'retryCount' and 'event' are incompatible.
+    Type 'MouseEvent<HTMLButtonElement, MouseEvent>' is not assignable to type 'number'.
+src/components/AiTaskAnalysisPopup.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/LogSection.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/TaskDetails.tsx(320,11): error TS6133: 'isMember' is declared but its value is never read.

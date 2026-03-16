@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00a651",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#191022",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(43, 27, 61, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 166, 81, 0.2);
+        }
+        .glass-input {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        body {
+            background: linear-gradient(135deg, #191022 0%, #11091a 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display text-slate-100 min-h-screen flex items-center justify-center p-4">
+<!-- Mobile Screen Wrapper -->
+<div class="relative w-[390px] h-[844px] bg-background-dark overflow-hidden rounded-[3rem] border-[8px] border-slate-900 shadow-2xl">
+<!-- Mock Background Content (Task Management UI) -->
+<div class="p-6 space-y-6 opacity-40">
+<div class="flex justify-between items-center">
+<div class="h-8 w-8 rounded-lg bg-primary/20"></div>
+<div class="h-10 w-10 rounded-full bg-slate-800"></div>
+</div>
+<div class="h-8 w-48 bg-slate-800 rounded-lg"></div>
+<div class="grid grid-cols-2 gap-4">
+<div class="h-32 bg-slate-800 rounded-xl"></div>
+<div class="h-32 bg-slate-800 rounded-xl"></div>
+</div>
+<div class="h-40 bg-slate-800 rounded-xl"></div>
+</div>
+<!-- Bottom Sheet Overlay -->
+<div class="absolute inset-0 bg-black/40 backdrop-blur-sm flex flex-col justify-end">
+<!-- Bottom Sheet Container -->
+<div class="glass-panel w-full rounded-t-[2.5rem] flex flex-col animate-in slide-in-from-bottom duration-500 pb-10">
+<!-- Handle -->
+<div class="flex h-8 w-full items-center justify-center">
+<div class="h-1.5 w-12 rounded-full bg-primary/30"></div>
+</div>
+<!-- Header -->
+<div class="flex items-center justify-between px-6 pb-4">
+<h2 class="text-xl font-extrabold tracking-tight text-slate-100">Invite a Member</h2>
+<button class="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-slate-400 text-[22px]">close</span>
+</button>
+</div>
+<!-- Search Input -->
+<div class="px-6 py-4">
+<label class="block mb-2 text-sm font-semibold text-slate-400 ml-1">User Email</label>
+<div class="relative group">
+<input class="glass-input w-full h-14 pl-12 pr-4 rounded-xl border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Enter colleague's email..." type="email" value="sarah.design@studio.com"/>
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-primary transition-colors">search</span>
+</div>
+</div>
+<!-- Results Section (Found User) -->
+<div class="px-6 py-4">
+<div class="glass-input border border-white/5 rounded-2xl p-4 flex items-center gap-4">
+<div class="relative">
+<img class="w-14 h-14 rounded-full border-2 border-primary object-cover" data-alt="Profile photo of a smiling woman with purple lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8hfUcPSXEvRj6C17-embYUgADSwiZHwF5TXV2hDhUJNeEuNH_YvdWEQdoxXl4s0Zx5i5aYQqBLumG18sTlfwhc6J0dE5ZKqugoJsDjimq-y9qMXBnEzwB-DYmvIAjUm3jBYC3Z3xayHCJlVHPcUBv7Sp5XEpV3uRlB_msIJ2vxNKU8hfHRAiM0_qkFmSCnyedwyCdL8f0r9fYnpoprYRcpfJ1xkTzrs84ZcRhb4sBnJ-AXPPeGysXaqznCUI5CuvjO6K10a9TjXGD"/>
+<div class="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-background-dark rounded-full"></div>
+</div>
+<div class="flex-1">
+<p class="font-bold text-slate-100 text-base leading-none mb-1">Sarah Jenkins</p>
+<p class="text-xs text-slate-400">Senior Product Designer</p>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-white px-4 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 transition-all active:scale-95">
+                            Invite
+                        </button>
+</div>
+</div>
+<!-- Current Members -->
+<div class="px-6 py-6">
+<h3 class="text-sm font-bold text-slate-400 mb-4 ml-1">Team in this project</h3>
+<div class="flex -space-x-3 items-center">
+<div class="relative group">
+<img class="w-11 h-11 rounded-full border-4 border-[#1a1122] object-cover ring-1 ring-white/10" data-alt="Portrait of a male team member" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwcK4xIpI_9DvV0TfAbH83H9WoPacDqy8s1FTq5iwKpXWwdtKEPAWI-hxA9wpARjaNgu2ArsVusFZbZbyFShPPzc9Bvzn_maMNuHBzv4rn0_L3H_KbBgXo-S1M868UwwHvyPpHi8_Nu_iQFu_NpPmyjQnwTv2tTxI_44oyIdtKICHydcBt_1wga0OH2qGmN904LPPUUVeJagZzaTo-0_kqgclQYCXyQWQ8hCQuPUjBCwkA5NkxEMJ-kZzA6EuIYo7b9bGy40VIG8QM"/>
+</div>
+<div class="relative group">
+<img class="w-11 h-11 rounded-full border-4 border-[#1a1122] object-cover ring-1 ring-white/10" data-alt="Portrait of a female team member" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuHAxZZbKQ2HRQONdYrVeAShU0F7G7CiHznAEWr1cDerkwMKwPDMn3nMS_N7GUQwP6cEbxTvjrK2ns-vh5n0oIo6yp3uOnGVqbJl9trlN2fE1qENnIoMC4wW-yLiplk5kO1RippaWCdUWn6Z4bSzW2Gbuir8rfHaP9JEhvKFBriMaMV50KmxpDQk1WnZO8LQP2uMVHFtccCkhnnZgnkZoh_woN-jl3ssBZxHcd5Z1IYI8vfzIcDMcRifv_5ic_P3pdxri_bnlo9eCP"/>
+</div>
+<div class="relative group">
+<img class="w-11 h-11 rounded-full border-4 border-[#1a1122] object-cover ring-1 ring-white/10" data-alt="Portrait of a third team member" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFyL1gsiAUC3V--EnJpaz02FeHmbRGvAsigPyHpiN9LJRK2Ts3pbPlvLkQ4m2LdEL451M5aQs0aRw1uA2grNDtI6p9uBhANyJuKGlNhdwjoMVLbMaxcntIFwQ-5XkPgkeWYnL3TYJ98YfLX-V7GZ_9sKd6l4Zb2LLOePNCAizBC8zBb6w8IFZKDK-Cku_zqabUWBorM9YMDhwT2JYVCzl5NcZV0So25Q3hvntbqkBkwhtYXfS2qQ1in0x-vm9KKQlcwZiL_QBN-HAg"/>
+</div>
+<div class="w-11 h-11 rounded-full border-4 border-[#1a1122] bg-primary/20 ring-1 ring-white/10 flex items-center justify-center text-xs font-bold text-primary">
+                            +12
+                        </div>
+</div>
+</div>
+<!-- Footer / CTA -->
+<div class="px-6 pt-2 pb-6">
+<button class="w-full h-14 bg-primary/10 border border-primary/20 text-primary font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-primary/20 transition-all">
+<span class="material-symbols-outlined text-xl">link</span>
+                        Copy Invite Link
+                    </button>
+</div>
+</div>
+</div>
+<!-- iOS Indicator -->
+<div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-white/20 rounded-full"></div>
+</div>
+</body></html>

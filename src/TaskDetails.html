@@ -1,0 +1,148 @@
+<html class="dark"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#00a651",
+            "background-light": "#f7f6f8",
+            "background-dark": "#191022",
+          },
+          fontFamily: {
+            "display": ["Manrope"]
+          },
+          borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen relative overflow-x-hidden">
+<!-- Background Organic Blurs -->
+<div class="fixed top-[-10%] left-[-10%] w-[60%] h-[40%] bg-primary/30 rounded-full blur-[120px] -z-10"></div>
+<div class="fixed bottom-[-10%] right-[-10%] w-[60%] h-[40%] bg-blue-600/20 rounded-full blur-[120px] -z-10"></div>
+<div class="max-w-[430px] mx-auto min-h-screen flex flex-col pb-32">
+<!-- Header -->
+<header class="p-6 flex items-center justify-between">
+<button class="w-10 h-10 flex items-center justify-center bg-white/10 backdrop-blur-md rounded-lg border border-white/10">
+<span class="material-icons-round text-slate-100">chevron_left</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight">Task Details</h1>
+<button class="w-10 h-10 flex items-center justify-center bg-white/10 backdrop-blur-md rounded-lg border border-white/10 text-primary">
+<span class="material-icons-round">more_horiz</span>
+</button>
+</header>
+<!-- Main Task Card -->
+<main class="px-6 space-y-6">
+<section class="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-xl p-6 shadow-2xl">
+<div class="flex justify-between items-start mb-4">
+<span class="px-3 py-1 bg-primary/20 text-primary text-xs font-semibold rounded-full border border-primary/30">
+            High Priority
+          </span>
+<span class="text-slate-400 text-xs">Due in 2 days</span>
+</div>
+<h2 class="text-2xl font-extrabold mb-3 leading-tight">Mobile App Redesign Interface</h2>
+<p class="text-slate-400 text-sm leading-relaxed mb-6">
+          Finalize the high-fidelity prototypes for the user dashboard and task management screens. Ensure the glassmorphism aesthetic is consistent across all components.
+        </p>
+<div class="space-y-2">
+<div class="flex justify-between items-center text-xs font-medium">
+<span class="text-slate-300">Overall Progress</span>
+<span class="text-primary">65%</span>
+</div>
+<div class="w-full h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+<div class="h-full bg-primary rounded-full shadow-[0_0_15px_rgba(0, 166, 81,0.6)]" style="width: 65%;"></div>
+</div>
+</div>
+</section>
+<!-- Sub-tasks Section -->
+<section class="space-y-4">
+<div class="flex items-center justify-between px-1">
+<h3 class="text-lg font-bold">Sub-tasks</h3>
+<span class="text-xs text-slate-400 bg-white/5 px-2 py-1 rounded-md">4/6 Completed</span>
+</div>
+<div class="space-y-3">
+<!-- Completed Sub-task -->
+<div class="flex items-center gap-4 bg-white/5 backdrop-blur-lg border border-white/10 p-4 rounded-xl group">
+<div class="w-6 h-6 flex items-center justify-center bg-primary rounded-full">
+<span class="material-icons-round text-white text-[16px]">check</span>
+</div>
+<span class="flex-1 text-slate-400 line-through text-sm font-medium">Research glassmorphism trends</span>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-red-400">
+<span class="material-icons-round text-lg">delete_outline</span>
+</button>
+</div>
+<!-- Completed Sub-task -->
+<div class="flex items-center gap-4 bg-white/5 backdrop-blur-lg border border-white/10 p-4 rounded-xl group">
+<div class="w-6 h-6 flex items-center justify-center bg-primary rounded-full">
+<span class="material-icons-round text-white text-[16px]">check</span>
+</div>
+<span class="flex-1 text-slate-400 line-through text-sm font-medium">Define primary color palette</span>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-red-400">
+<span class="material-icons-round text-lg">delete_outline</span>
+</button>
+</div>
+<!-- Active Sub-task -->
+<div class="flex items-center gap-4 bg-white/10 backdrop-blur-lg border border-white/20 p-4 rounded-xl group">
+<div class="w-6 h-6 border-2 border-primary rounded-full"></div>
+<span class="flex-1 text-slate-100 text-sm font-medium">Create dark mode components</span>
+<button class="text-slate-500 hover:text-red-400">
+<span class="material-icons-round text-lg">delete_outline</span>
+</button>
+</div>
+<!-- Active Sub-task -->
+<div class="flex items-center gap-4 bg-white/10 backdrop-blur-lg border border-white/20 p-4 rounded-xl group">
+<div class="w-6 h-6 border-2 border-slate-600 rounded-full"></div>
+<span class="flex-1 text-slate-100 text-sm font-medium">Prototype navigation transitions</span>
+<button class="text-slate-500 hover:text-red-400">
+<span class="material-icons-round text-lg">delete_outline</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Input and Navigation -->
+<div class="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto px-6 pb-8 pt-4 bg-gradient-to-t from-background-dark via-background-dark/95 to-transparent">
+<!-- Floating Input -->
+<div class="mb-6 bg-white/10 backdrop-blur-3xl border border-white/20 rounded-full flex items-center p-1.5 pl-5 shadow-xl">
+<input class="bg-transparent border-none focus:ring-0 text-sm flex-1 text-slate-100 placeholder:text-slate-500" placeholder="Add a new sub-task..." type="text"/>
+<button class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center shadow-lg shadow-primary/40 active:scale-95 transition-transform">
+<span class="material-icons-round">add</span>
+</button>
+</div>
+<!-- Navigation Bar -->
+<nav class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-full px-6 py-3 flex items-center justify-between shadow-2xl">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-icons-round">grid_view</span>
+<span class="text-[10px] font-bold">Dashboard</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300">
+<span class="material-icons-round">calendar_today</span>
+<span class="text-[10px] font-medium">Schedule</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300">
+<span class="material-icons-round">notifications</span>
+<span class="text-[10px] font-medium">Alerts</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-500 hover:text-slate-300">
+<div class="w-6 h-6 rounded-full overflow-hidden border border-white/20">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="Close up of professional man portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBhoYAsP6SHImquAL2njf8WFOyQXqnJTiiVJNJno8Zz2RfEdvR-AWkW7T6RJ9TXlDqfRKLV_i85DJxk6WckJoibPXRelW25RWEfyfvoZGlnc1dJUQh3eCVCefjB991elS6MeaFbuvM_0dFI1-xEVkz9cpwuKTa6YgGJOFaQHpkXBdJQU3G2pymGlPL-Qnzz3BRZd_pE7iuNHien44oZUJ-Ln4-oefUJY5oaScUhZ5rVmATiPcJ57GQ_Xae9U85brlYy2q0W1xSB2ZQ"/>
+</div>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</nav>
+</div>
+</div>
+</body></html>

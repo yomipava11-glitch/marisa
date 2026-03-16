@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#8c2bee",
+              "background-light": "#f6f6f8",
+              "background-dark": "#101022",
+              "glass-border": "rgba(255, 255, 255, 0.1)",
+            },
+            fontFamily: {
+              "display": ["Space Grotesk", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #101022;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow-primary {
+            box-shadow: 0 0 20px rgba(140, 43, 238, 0.4);
+        }
+        .bg-blob {
+            position: fixed;
+            z-index: -1;
+            filter: blur(80px);
+            opacity: 0.4;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen overflow-x-hidden">
+<!-- Background Decorative Elements -->
+<div class="bg-blob w-[300px] h-[300px] bg-primary rounded-full top-[-50px] left-[-100px]"></div>
+<div class="bg-blob w-[400px] h-[400px] bg-blue-600 rounded-full bottom-[-100px] right-[-100px]"></div>
+<!-- Header / Navigation -->
+<nav class="sticky top-0 z-50 px-4 py-3">
+<div class="mx-auto max-w-lg glass-card rounded-full px-5 py-2 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="bg-primary p-1.5 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-xl">auto_awesome</span>
+</div>
+<span class="font-bold text-lg tracking-tight">GestionTask</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-sm font-medium text-slate-400 hover:text-white transition-colors">Tarifs</button>
+<button class="bg-primary text-white text-xs font-bold px-4 py-2 rounded-full glow-primary">
+                    Se Connecter
+                </button>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<main class="relative px-6 pt-12 pb-16 @container">
+<div class="flex flex-col items-center text-center gap-6">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm">rocket_launch</span>
+                V2.0 est arrivée
+            </div>
+<h1 class="text-4xl @[480px]:text-5xl font-black leading-[1.1] tracking-tight text-slate-900 dark:text-white">
+                Maîtrisez votre productivité avec <span class="text-primary">l'IA</span>
+</h1>
+<p class="text-base text-slate-500 dark:text-slate-400 leading-relaxed max-w-sm">
+                Gérez vos projets avec une efficacité inégalée grâce à notre interface intelligente et intuitive conçue pour les équipes modernes.
+            </p>
+<button class="w-full max-w-xs bg-primary hover:bg-primary/90 text-white font-bold py-4 px-8 rounded-xl glow-primary transition-all flex items-center justify-center gap-2 group">
+                Commencer Gratuitement
+                <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<!-- Dashboard Preview -->
+<div class="mt-12 w-full relative">
+<div class="absolute inset-0 bg-primary/20 blur-[100px] -z-10 rounded-full"></div>
+<div class="glass-card rounded-xl p-2 border-white/20">
+<img alt="Aperçu Dashboard" class="rounded-lg w-full shadow-2xl grayscale-[20%] contrast-[110%]" data-alt="Abstract dark dashboard showing project charts and tasks" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9VxGVabzvAOLhAM72KkhUtNlPLv1oxc_x7xKYUvJCzqXfUguO2Cvo2tTZHrj_r5SkBogJdY2iia9t8SqvuiqA-WJ4r1GT3h_ljD8Fbq49lCUeHi-BXWxhc4DzEBjQahDWij2c0bRNFEO-PcLHfV91-4jfZLL_uodjEbqfS1xMl4APEJRXOSXOz-uWmMmAMmQ7DoUOzSsfQ72GYspxe386hu0uLhqmvFidbSNIHT0MG5wFqGT8JpYrIV8W7VNt8-gB3lBS08CbdiYs"/>
+</div>
+</div>
+</div>
+</main>
+<!-- Features Section -->
+<section class="px-6 py-12">
+<div class="flex flex-col gap-2 mb-10">
+<h2 class="text-2xl font-bold text-slate-900 dark:text-white">Fonctionnalités Premium</h2>
+<p class="text-slate-500 dark:text-slate-400">Des outils propulsés par l'IA pour booster votre flux de travail.</p>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<!-- Feature 1 -->
+<div class="glass-card p-6 rounded-xl flex flex-col gap-4 border-white/10 hover:border-primary/50 transition-colors group">
+<div class="bg-primary/20 p-3 rounded-lg w-fit text-primary">
+<span class="material-symbols-outlined text-3xl">memory</span>
+</div>
+<div>
+<h3 class="text-xl font-bold mb-1 group-hover:text-primary transition-colors">Intelligence Artificielle</h3>
+<p class="text-slate-400 text-sm leading-relaxed">Agile Scrum Master AI pour optimiser vos sprints et prédire les goulots d'étranglement.</p>
+</div>
+</div>
+<!-- Feature 2 -->
+<div class="glass-card p-6 rounded-xl flex flex-col gap-4 border-white/10 hover:border-primary/50 transition-colors group">
+<div class="bg-primary/20 p-3 rounded-lg w-fit text-primary">
+<span class="material-symbols-outlined text-3xl">groups</span>
+</div>
+<div>
+<h3 class="text-xl font-bold mb-1 group-hover:text-primary transition-colors">Collaboration d'Équipe</h3>
+<p class="text-slate-400 text-sm leading-relaxed">Travaillez ensemble sur des tâches collectives en un clic avec une synchronisation parfaite.</p>
+</div>
+</div>
+<!-- Feature 3 -->
+<div class="glass-card p-6 rounded-xl flex flex-col gap-4 border-white/10 hover:border-primary/50 transition-colors group">
+<div class="bg-primary/20 p-3 rounded-lg w-fit text-primary">
+<span class="material-symbols-outlined text-3xl">analytics</span>
+</div>
+<div>
+<h3 class="text-xl font-bold mb-1 group-hover:text-primary transition-colors">Suivi en Temps Réel</h3>
+<p class="text-slate-400 text-sm leading-relaxed">Visualisez votre progression avec des tableaux de bord dynamiques et des rapports automatisés.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="px-6 py-12 border-t border-white/5 bg-background-light dark:bg-background-dark/50">
+<div class="flex flex-col items-center gap-8">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">auto_awesome</span>
+<span class="font-bold text-lg">GestionTask</span>
+</div>
+<div class="flex gap-6 text-sm text-slate-500 font-medium">
+<a class="hover:text-primary transition-colors" href="#">À propos</a>
+<a class="hover:text-primary transition-colors" href="#">Support</a>
+<a class="hover:text-primary transition-colors" href="#">Confidentialité</a>
+<a class="hover:text-primary transition-colors" href="#">CGU</a>
+</div>
+<div class="flex gap-4">
+<div class="size-10 rounded-full glass-card flex items-center justify-center text-slate-400 hover:text-white cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-xl">share</span>
+</div>
+<div class="size-10 rounded-full glass-card flex items-center justify-center text-slate-400 hover:text-white cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-xl">mail</span>
+</div>
+</div>
+<p class="text-xs text-slate-600 dark:text-slate-500">
+                © 2024 GestionTask. Tous droits réservés.
+            </p>
+</div>
+</footer>
+<!-- Bottom Navigation Bar (App Feel) -->
+<div class="fixed bottom-0 left-0 right-0 z-50 px-4 pb-6">
+<div class="max-w-md mx-auto glass-card rounded-full p-2 flex justify-between items-center shadow-2xl">
+<a class="flex-1 flex flex-col items-center py-2 text-primary" href="#">
+<span class="material-symbols-outlined font-fill text-2xl">home</span>
+</a>
+<a class="flex-1 flex flex-col items-center py-2 text-slate-500" href="#">
+<span class="material-symbols-outlined text-2xl">rocket_launch</span>
+</a>
+<a class="flex-1 flex flex-col items-center py-2 text-slate-500" href="#">
+<span class="material-symbols-outlined text-2xl">credit_card</span>
+</a>
+<a class="flex-1 flex flex-col items-center py-2 text-slate-500" href="#">
+<span class="material-symbols-outlined text-2xl">person</span>
+</a>
+</div>
+</div>
+</body></html>

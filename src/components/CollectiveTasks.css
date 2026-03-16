@@ -1,0 +1,299 @@
+.collective-container {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-background-dark);
+    background-image:
+        radial-gradient(circle at 0% 0%, rgba(46, 16, 101, 0.4) 0%, transparent 50%),
+        radial-gradient(circle at 100% 100%, rgba(30, 27, 75, 0.4) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(76, 29, 149, 0.4) 0%, transparent 70%);
+    color: #f1f5f9;
+    overflow: hidden;
+}
+
+.collective-header {
+    flex-shrink: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.collective-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin: 0;
+}
+
+.main-content {
+    flex: 1;
+    padding: 1.5rem 1rem;
+    padding-bottom: 8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.main-content::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-section {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    flex-shrink: 0;
+}
+
+.filter-section::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-pill {
+    display: flex;
+    min-height: 2.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0 1.25rem;
+    white-space: nowrap;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s;
+    font-size: 0.875rem;
+    font-family: inherit;
+}
+
+.filter-pill.active {
+    background-color: var(--color-primary);
+    color: white;
+    box-shadow: 0 10px 15px -3px rgba(0, 166, 81, 0.2);
+    font-weight: 600;
+}
+
+.filter-pill.inactive {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font-weight: 500;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin: 0;
+}
+
+.section-badge {
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.feed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    position: relative;
+}
+
+.feed-item {
+    background: rgba(14, 8, 20, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 166, 81, 0.2);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    position: relative;
+    overflow: hidden;
+}
+
+.feed-item.highlight {
+    border-left: 4px solid var(--color-primary);
+}
+
+.feed-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 166, 81, 0.3);
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.feed-content {
+    flex: 1;
+}
+
+.feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
+}
+
+.feed-text {
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.feed-user {
+    color: var(--color-primary);
+}
+
+.feed-time {
+    font-size: 0.625rem;
+    font-weight: 500;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.feed-subtext {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin: 0 0 0.5rem 0;
+}
+
+.feed-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.tasks-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.group-task-card {
+    background: rgba(14, 8, 20, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 166, 81, 0.2);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.task-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.task-icon-box {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.5rem;
+    background: rgba(0, 166, 81, 0.2);
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.task-icon-box img {
+    width: 100%;
+    height: 100%;
+    border-radius: 0.5rem;
+}
+
+.avatars-stack {
+    display: flex;
+    margin-left: 0.5rem;
+}
+
+.stack-avatar {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    border: 2px solid var(--color-background-dark);
+    margin-left: -0.5rem;
+    object-fit: cover;
+}
+
+.stack-more {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    border: 2px solid var(--color-background-dark);
+    margin-left: -0.5rem;
+    background-color: #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.625rem;
+    font-weight: 700;
+    color: #94a3b8;
+}
+
+.task-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.task-card-desc {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin: 0.25rem 0 0 0;
+}
+
+.progress-bar-bg {
+    width: 100%;
+    background-color: rgba(30, 41, 59, 0.4);
+    height: 0.375rem;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: var(--color-primary);
+    border-radius: 9999px;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.progress-bar-fill.urgent {
+    background-color: #f59e0b;
+}
+
+.progress-bar-fill.overdue {
+    background-color: #ef4444;
+}

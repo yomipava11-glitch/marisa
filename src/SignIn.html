@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00a651",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#191022",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-input {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .bg-mesh {
+            background-color: #191022;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 166, 81, 0.3) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.3) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 166, 81, 0.2) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.2) 0px, transparent 50%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark font-display text-slate-100 antialiased overflow-hidden">
+<div class="relative flex min-h-screen w-full flex-col bg-mesh items-center justify-center p-6">
+<!-- Abstract Shapes for Glassmorphism depth -->
+<div class="absolute top-20 left-10 w-32 h-32 bg-primary/40 rounded-full blur-[80px]"></div>
+<div class="absolute bottom-20 right-10 w-48 h-48 bg-blue-500/30 rounded-full blur-[100px]"></div>
+<div class="w-full max-w-[400px] flex flex-col items-center">
+<!-- App Logo Placeholder -->
+<div class="mb-10 flex items-center justify-center">
+<div class="size-16 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/40">
+<span class="material-symbols-outlined text-white text-4xl">task_alt</span>
+</div>
+</div>
+<!-- Main Glass Card -->
+<div class="glass-card w-full rounded-xl p-8 shadow-2xl">
+<div class="mb-8 text-center">
+<h1 class="text-3xl font-bold tracking-tight text-white">Welcome Back</h1>
+<p class="text-slate-400 mt-2">Sign in to manage your tasks</p>
+</div>
+<div class="space-y-4">
+<!-- Email Field -->
+<div class="space-y-2">
+<label class="text-sm font-medium text-slate-300 ml-1">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">mail</span>
+<input class="glass-input w-full h-14 pl-12 pr-4 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" placeholder="name@company.com" type="email"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="space-y-2">
+<div class="flex justify-between items-center ml-1">
+<label class="text-sm font-medium text-slate-300">Password</label>
+<a class="text-xs text-primary font-semibold hover:opacity-80" href="#">Forgot?</a>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">lock</span>
+<input class="glass-input w-full h-14 pl-12 pr-4 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" placeholder="••••••••" type="password"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl cursor-pointer">visibility</span>
+</div>
+</div>
+<!-- Sign In Button -->
+<button class="w-full h-14 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] mt-4 flex items-center justify-center gap-2">
+                        Sign In
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<div class="flex items-center my-6">
+<div class="flex-1 h-px bg-white/10"></div>
+<span class="px-3 text-xs text-slate-500 font-medium uppercase tracking-wider">or continue with</span>
+<div class="flex-1 h-px bg-white/10"></div>
+</div>
+<!-- Google Sign In -->
+<button class="glass-input w-full h-14 flex items-center justify-center gap-3 rounded-xl hover:bg-white/10 transition-all active:scale-[0.98]">
+<img alt="Google" class="w-5 h-5" data-alt="Google logo colorful icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDR1QE4AwwySlCBI-OtWMw5GOAyfJufn6_TtUljftKAYGQl5PsbDdpASdic1AxqYE0oVogjvOrOfOKFHNraF3njfUQmbJv3WqvWZeyEtog5dH35yv8aMsWaxWwv_-5za01NYdMDtiiOo1Da1AUltdg0aff8JLIrL2GSk6k0nB7fQoLrDzKtHg-rwS1I3vTqCUpEPgGrlqs16ho6EQZpyayrPvRD9LP6R9rX4kyZDeiVZtV4Y-HbZvgBkTewqVyWpU2LVOxdjyMCpbE1"/>
+<span class="text-white font-semibold">Sign in with Google</span>
+</button>
+</div>
+</div>
+<!-- Sign Up Link -->
+<p class="mt-8 text-slate-400 font-medium">
+                Don't have an account? 
+                <a class="text-primary font-bold hover:underline" href="#">Sign Up</a>
+</p>
+</div>
+<!-- iOS Indicator style spacer -->
+<div class="absolute bottom-2 w-32 h-1 bg-white/20 rounded-full"></div>
+</div>
+</body></html>

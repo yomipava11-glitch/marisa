@@ -1,0 +1,58 @@
+@startuml UseCaseDiagram
+
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Utilisateur Non Connecté" as Visiteur
+actor "Membre (Connecté)" as Membre
+actor "Créateur / Admin (Tâche)" as Admin
+actor "Invité (Tâche)" as Invite
+actor "Système IA (Scrum Master)" as IA
+
+rectangle "Système de Gestion de Tâches" {
+    
+    usecase "S'inscrire / Se connecter" as UC_Auth
+    Visiteur --> UC_Auth
+    
+    usecase "Gérer son profil" as UC_Profil
+    usecase "Consulter son tableau de bord" as UC_Dashboard
+    Membre --> UC_Profil
+    Membre --> UC_Dashboard
+    
+    usecase "Créer une Tâche" as UC_CreerTache
+    usecase "Modifier / Supprimer la Tâche" as UC_ModifTache
+    usecase "Gérer les Sous-tâches" as UC_GestionSousTaches
+    usecase "Inviter des membres" as UC_Inviter
+    usecase "Gérer les rôles des membres" as UC_Roles
+    usecase "Demander Analyse IA" as UC_AskIA
+    
+    Admin --> UC_CreerTache
+    Admin --> UC_ModifTache
+    Admin --> UC_GestionSousTaches
+    Admin --> UC_Inviter
+    Admin --> UC_Roles
+    Admin --> UC_AskIA
+    
+    usecase "Consulter les détails de la tâche" as UC_ConsulterTache
+    usecase "Accepter / Refuser une invitation" as UC_GererInvit
+    usecase "Changer le statut d'une sous-tâche assignée" as UC_StatutSousTache
+    usecase "Ajouter des Logs / Journal" as UC_Logs
+    
+    Invite --> UC_ConsulterTache
+    Invite --> UC_GererInvit
+    Invite --> UC_StatutSousTache
+    Invite --> UC_Logs
+    
+    usecase "Analyser les performances de la tâche" as UC_AnalyseIA
+    usecase "Fournir des recommandations (Health Score)" as UC_ScoreIA
+    
+    IA --> UC_AnalyseIA
+    IA --> UC_ScoreIA
+    
+    UC_AskIA .> UC_AnalyseIA : <<include>>
+}
+
+Admin -|> Membre
+Invite -|> Membre
+
+@enduml

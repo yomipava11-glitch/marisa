@@ -1,0 +1,155 @@
+<html class="dark"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00a651",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#191022",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .bg-mesh {
+            background-color: #191022;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 166, 81, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 166, 81, 0.1) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.1) 0px, transparent 50%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col items-center justify-center overflow-x-hidden">
+<div class="relative flex h-[844px] w-[390px] flex-col bg-mesh shadow-2xl overflow-hidden rounded-[3rem] border-8 border-slate-900 dark:border-slate-800">
+<!-- Header -->
+<header class="sticky top-0 z-20 glass-panel flex items-center justify-between px-6 pt-12 pb-4">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-slate-100">arrow_back_ios_new</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight text-slate-100">Pending Invitations</h1>
+<div class="size-10"></div> <!-- Spacer for symmetry -->
+</header>
+<!-- Main Content Scroll Area -->
+<main class="flex-1 overflow-y-auto px-6 pt-6 pb-24 space-y-4">
+<h2 class="text-sm font-semibold uppercase tracking-widest text-primary mb-4 opacity-80">Collective Tasks (2)</h2>
+<!-- Invitation Card 1 -->
+<div class="glass-panel p-5 rounded-xl space-y-5">
+<div class="flex items-start justify-between">
+<div class="space-y-1">
+<h3 class="text-xl font-bold text-white">Website Redesign</h3>
+<div class="flex items-center gap-2">
+<img class="size-6 rounded-full border border-primary/30" data-alt="User avatar of Alex Rivers" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoumjxzanWt54vktIJLRBMnC32mpYGhgH6A8h4UAwFBrE-bBv7PqMMEt14A0Bgsq0u63RYojErinB53Fu3_y8QjILxTGvp3D6iqQAyL8lmPWqlNHbS_P9ESpc8hvcYxOs0dZU2aSFfBCWqmJRmgpJShUfCx8mhEoIVqAKqf1BGCm6fD81N2YKVdPVcf5AOPFKHGgvYNg_O_rxJ7n1s26ZU_SHanAke-19dLde9s14eC81qiLgeFPJ24kZWsnPeoQu4RXWq_NQEEWtM"/>
+<p class="text-slate-300 text-sm font-medium">Invited by <span class="text-white">Alex Rivers</span></p>
+</div>
+</div>
+<div class="size-12 rounded-lg bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">brush</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 bg-primary hover:bg-primary/90 text-white h-12 rounded-lg font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-xl">check</span>
+                        Accept
+                    </button>
+<button class="flex-1 glass-panel hover:bg-white/10 text-white h-12 rounded-lg font-bold flex items-center justify-center gap-2 transition-all">
+<span class="material-symbols-outlined text-xl">close</span>
+                        Decline
+                    </button>
+</div>
+</div>
+<!-- Invitation Card 2 -->
+<div class="glass-panel p-5 rounded-xl space-y-5">
+<div class="flex items-start justify-between">
+<div class="space-y-1">
+<h3 class="text-xl font-bold text-white">Product Strategy Q3</h3>
+<div class="flex items-center gap-2">
+<img class="size-6 rounded-full border border-primary/30" data-alt="User avatar of Sarah Chen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhi4bqdzGIo1RrYLx78_t8otIJn5X_oowTyJpevj7x1fsapRjjGMEZ07lHwOtlgHhCHv1P1MS5YMp5k5-BnSkp9dXHgrswN0Geh_R3Ncr5W6rgf7yInVPDeBRVMeGl7tc8zsO_F42O9Wb4dcXpUZ-0vSDi-ANe-ph-CsL6OKuiCSzcZrLPA6rpGWhV8PVhMuQZAvmuDJf_zbLRM-nt5QakR68vl8qxyupk_Jsde5eF558NB4UVUT0I5XbB1khsZuWswJrwAlvF6aEK"/>
+<p class="text-slate-300 text-sm font-medium">Invited by <span class="text-white">Sarah Chen</span></p>
+</div>
+</div>
+<div class="size-12 rounded-lg bg-blue-500/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-blue-400">insights</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 bg-primary hover:bg-primary/90 text-white h-12 rounded-lg font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-xl">check</span>
+                        Accept
+                    </button>
+<button class="flex-1 glass-panel hover:bg-white/10 text-white h-12 rounded-lg font-bold flex items-center justify-center gap-2 transition-all">
+<span class="material-symbols-outlined text-xl">close</span>
+                        Decline
+                    </button>
+</div>
+</div>
+<!-- Empty State Visualization (Hidden by default but coded for UI preview) -->
+<!-- 
+            <div class="flex flex-col items-center justify-center py-20 text-center space-y-6">
+                <div class="size-48 rounded-full glass-panel flex items-center justify-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-primary/10 animate-pulse"></div>
+                    <span class="material-symbols-outlined text-7xl text-primary/60">mark_email_read</span>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="text-2xl font-bold text-white">All caught up!</h3>
+                    <p class="text-slate-400">No pending invitations for now.</p>
+                </div>
+            </div>
+            -->
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="absolute bottom-0 left-0 right-0 glass-panel border-t-0 border-x-0 pb-8 pt-4">
+<div class="flex items-center justify-around px-4">
+<a class="flex flex-col items-center gap-1 group" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">list_alt</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-primary transition-colors">Tasks</span>
+</a>
+<a class="flex flex-col items-center gap-1 group" href="#">
+<div class="relative flex flex-col items-center">
+<span class="material-symbols-outlined text-primary fill-[1]">group</span>
+<div class="absolute -top-1 -right-1 size-2 bg-primary rounded-full"></div>
+</div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-primary">Collective</span>
+</a>
+<a class="flex flex-col items-center gap-1 group" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">calendar_today</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-primary transition-colors">Calendar</span>
+</a>
+<a class="flex flex-col items-center gap-1 group" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">person</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-primary transition-colors">Profile</span>
+</a>
+</div>
+<!-- iOS Home Indicator Area -->
+<div class="mx-auto mt-4 h-1 w-32 rounded-full bg-white/20"></div>
+</nav>
+<!-- Dynamic Background Elements -->
+<div class="absolute top-[-10%] left-[-10%] size-64 bg-primary/20 blur-[100px] pointer-events-none"></div>
+<div class="absolute bottom-[20%] right-[-10%] size-64 bg-blue-500/10 blur-[80px] pointer-events-none"></div>
+</div>
+</body></html>

@@ -1,0 +1,291 @@
+/* Contacts Page */
+.contacts-container {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-background-dark);
+    background-image:
+        radial-gradient(circle at 0% 0%, rgba(46, 16, 101, 0.4) 0%, transparent 50%),
+        radial-gradient(circle at 100% 100%, rgba(30, 27, 75, 0.4) 0%, transparent 50%);
+    color: #f1f5f9;
+    overflow: hidden;
+}
+
+.contacts-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 4rem;
+    scrollbar-width: none;
+}
+
+.contacts-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.contacts-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.contacts-icon-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border-radius: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+    cursor: pointer;
+}
+
+.contacts-page-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin: 0;
+}
+
+/* Add Form */
+.contacts-add-form {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.contacts-form-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.contacts-input-row {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.contacts-input {
+    flex: 1;
+    padding: 0.875rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.75rem;
+    color: #f1f5f9;
+    font-size: 0.9rem;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.contacts-input:focus {
+    border-color: rgba(0, 166, 81, 0.4);
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.contacts-input::placeholder {
+    color: rgba(148, 163, 184, 0.5);
+}
+
+.contacts-add-btn {
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #00a651, #047857);
+    border: none;
+    border-radius: 0.75rem;
+    color: white;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(0, 166, 81, 0.3);
+    transition: all 0.2s;
+}
+
+.contacts-add-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 166, 81, 0.45);
+}
+
+.contacts-add-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.contacts-msg {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 0;
+    text-align: center;
+}
+
+.contacts-msg.success { color: #4ade80; }
+.contacts-msg.error { color: #ef4444; }
+
+/* Section */
+.contacts-section {
+    padding: 0 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.contacts-section-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.contacts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Contact Card */
+.contact-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0.75rem;
+    transition: background 0.2s;
+}
+
+.contact-card.pending {
+    border-color: rgba(245, 158, 11, 0.2);
+    background: rgba(245, 158, 11, 0.05);
+}
+
+.contact-avatar {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 166, 81, 0.3);
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.contact-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.contact-name {
+    margin: 0;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #f1f5f9;
+}
+
+.contact-email {
+    margin: 0;
+    font-size: 0.7rem;
+    color: #64748b;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.contact-actions {
+    display: flex;
+    gap: 0.4rem;
+    flex-shrink: 0;
+}
+
+.contact-accept-btn {
+    width: 2.25rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(74, 222, 128, 0.15);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+    border-radius: 0.5rem;
+    color: #4ade80;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.contact-accept-btn:hover {
+    background: rgba(74, 222, 128, 0.25);
+}
+
+.contact-accept-btn .material-symbols-outlined { font-size: 18px; }
+
+.contact-reject-btn {
+    width: 2.25rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 0.5rem;
+    color: #ef4444;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.contact-reject-btn:hover {
+    background: rgba(239, 68, 68, 0.25);
+}
+
+.contact-reject-btn .material-symbols-outlined { font-size: 18px; }
+
+.contact-remove-btn {
+    width: 2.25rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0.5rem;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.contact-remove-btn:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.contact-remove-btn .material-symbols-outlined { font-size: 18px; }
+
+.contacts-empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #64748b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.contacts-empty p {
+    margin: 0;
+    font-size: 0.85rem;
+}

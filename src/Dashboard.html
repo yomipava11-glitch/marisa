@@ -1,0 +1,191 @@
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00a651",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#0a0510",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-dark {
+            background: rgba(0, 166, 81, 0.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 166, 81, 0.2);
+        }
+        .bg-gradient-mesh {
+            background: radial-gradient(circle at 0% 0%, #1a1033 0%, transparent 50%),
+                        radial-gradient(circle at 100% 0%, #2e104e 0%, transparent 50%),
+                        radial-gradient(circle at 100% 100%, #120826 0%, transparent 50%),
+                        radial-gradient(circle at 0% 100%, #3b0a7d 0%, transparent 50%);
+            background-color: #0a0510;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-full min-h-screen w-full flex-col bg-gradient-mesh overflow-x-hidden pb-24">
+<!-- Header Section -->
+<div class="flex items-center p-6 pb-2 justify-between">
+<div class="flex gap-4 items-center">
+<div class="size-12 shrink-0 rounded-full border-2 border-primary/40 p-0.5 overflow-hidden">
+<img class="w-full h-full object-cover rounded-full" data-alt="Modern professional male user avatar portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFpNtW2tpv5hqAT6QyheQKqt7OR3ycOTTFy1Ey4A1c4nm3fANtWnyTSi-sXYYJ8hI0G9ukesSnjZvGIYbv6j-6G8TlUtufj9XkVFdiPYvLG4jCUeGqadJrGwqSB0JOuUHzg4QO9B_j0wUUPXWZ2CT1WP3LYEMNoEa3_fvRCcAWPpeJ8pbdeq6Kdy0WHBlk_9PIGA2xcYJKDTiSH0CuqKNJRWiqFir3HMYjMjx_GU2GWQrjBYMHsO2f1E01TudbYTiQX-iamqCViHiw"/>
+</div>
+<div>
+<h2 class="text-slate-100 text-xl font-bold leading-tight tracking-tight">Hello, Alex!</h2>
+<p class="text-slate-400 text-xs font-medium uppercase tracking-widest">Focus Mode On</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex size-10 cursor-pointer items-center justify-center rounded-full glass text-slate-100">
+<span class="material-symbols-outlined text-xl">notifications</span>
+</button>
+<button class="flex size-10 cursor-pointer items-center justify-center rounded-full glass text-slate-100">
+<span class="material-symbols-outlined text-xl">search</span>
+</button>
+</div>
+</div>
+<!-- Progress Overview -->
+<div class="px-6 py-6 flex items-center justify-between">
+<div class="flex flex-col gap-1">
+<p class="text-slate-100 text-2xl font-extrabold">Daily Progress</p>
+<p class="text-primary font-semibold text-sm">3 of 4 tasks completed</p>
+</div>
+<!-- Progress Ring -->
+<div class="relative size-20 flex items-center justify-center">
+<svg class="size-full transform -rotate-90">
+<circle class="text-white/10" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-width="6"></circle>
+<circle class="text-primary" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-dasharray="213.6" stroke-dashoffset="53.4" stroke-linecap="round" stroke-width="6"></circle>
+</svg>
+<span class="absolute text-slate-100 text-sm font-bold">75%</span>
+</div>
+</div>
+<!-- AI Advice Card -->
+<div class="px-6 py-2">
+<div class="glass-dark rounded-xl p-5 relative overflow-hidden">
+<div class="absolute -top-10 -right-10 size-32 bg-primary/20 blur-3xl rounded-full"></div>
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-lg">auto_awesome</span>
+<p class="text-primary text-[10px] font-bold tracking-[0.2em] uppercase">Daily AI Advice</p>
+</div>
+<p class="text-slate-100 text-base font-semibold leading-relaxed relative z-10">
+                    "Try focusing on your most complex task first today while your energy is peak."
+                </p>
+</div>
+</div>
+<!-- Tasks Section -->
+<div class="px-6 pt-8 pb-4 flex items-center justify-between">
+<h2 class="text-slate-100 text-xl font-bold tracking-tight">My Tasks</h2>
+<button class="text-primary text-sm font-bold">View All</button>
+</div>
+<div class="px-6 flex flex-col gap-4">
+<!-- Task Item 1 -->
+<div class="glass flex items-center gap-4 p-4 rounded-xl">
+<div class="flex-shrink-0">
+<div class="size-6 rounded-lg border-2 border-primary/50 flex items-center justify-center bg-primary/20">
+<span class="material-symbols-outlined text-primary text-lg font-bold">check</span>
+</div>
+</div>
+<div class="flex-1">
+<h3 class="text-slate-100 text-sm font-bold line-through opacity-50">Design System Audit</h3>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-slate-400 font-medium">9:00 AM</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-500">more_vert</span>
+</div>
+<!-- Task Item 2 -->
+<div class="glass flex items-center gap-4 p-4 rounded-xl border-l-4 border-l-primary">
+<div class="flex-shrink-0">
+<div class="size-6 rounded-lg border-2 border-slate-600 flex items-center justify-center"></div>
+</div>
+<div class="flex-1">
+<h3 class="text-slate-100 text-sm font-bold">Product Strategy Sync</h3>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary font-bold">High Priority</span>
+<span class="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-slate-300 font-medium">11:30 AM</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-500">more_vert</span>
+</div>
+<!-- Task Item 3 -->
+<div class="glass flex items-center gap-4 p-4 rounded-xl">
+<div class="flex-shrink-0">
+<div class="size-6 rounded-lg border-2 border-primary/50 flex items-center justify-center bg-primary/20">
+<span class="material-symbols-outlined text-primary text-lg font-bold">check</span>
+</div>
+</div>
+<div class="flex-1">
+<h3 class="text-slate-100 text-sm font-bold line-through opacity-50">Review Q3 Roadmaps</h3>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-slate-400 font-medium">Done</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-500">more_vert</span>
+</div>
+<!-- Task Item 4 -->
+<div class="glass flex items-center gap-4 p-4 rounded-xl">
+<div class="flex-shrink-0">
+<div class="size-6 rounded-lg border-2 border-primary/50 flex items-center justify-center bg-primary/20">
+<span class="material-symbols-outlined text-primary text-lg font-bold">check</span>
+</div>
+</div>
+<div class="flex-1">
+<h3 class="text-slate-100 text-sm font-bold line-through opacity-50">Email Newsletter Draft</h3>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-slate-400 font-medium">Done</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-500">more_vert</span>
+</div>
+</div>
+<!-- Floating Action Button -->
+<button class="fixed bottom-28 right-6 size-14 rounded-full bg-gradient-to-tr from-primary to-[#b673ff] flex items-center justify-center shadow-lg shadow-primary/40 z-20">
+<span class="material-symbols-outlined text-white text-3xl">add</span>
+</button>
+<!-- Glassmorphic Navigation Bar -->
+<div class="fixed bottom-0 left-0 right-0 p-4 pb-8 z-30">
+<div class="glass rounded-full flex justify-between items-center px-8 py-3">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined text-2xl fill-[1]">dashboard</span>
+<span class="text-[10px] font-bold">Dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined text-2xl">group</span>
+<span class="text-[10px] font-medium">Collective</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined text-2xl">account_circle</span>
+<span class="text-[10px] font-medium">Profile</span>
+</a>
+</div>
+</div>
+</div>
+</body></html>
