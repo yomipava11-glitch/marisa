@@ -38,38 +38,6 @@ export function Profile({ user, onSignOut, onNavigate }: ProfileProps) {
         }
     };
 
-    const handleSave = async () => {
-        setSaving(true);
-        setMessage('');
-
-        // Update auth metadata
-        const { error } = await supabase.auth.updateUser({
-            data: { full_name: fullName }
-        });
-
-        if (error) {
-            setMessage('Erreur lors de la mise à jour du profil.');
-            console.error(error);
-        } else {
-            // Update the profils table to keep data in sync for collective tasks
-            const { error: dbError } = await supabase
-                .from('profils')
-                .update({ nom: fullName })
-                .eq('id', user.id);
-
-            if (dbError) {
-                console.error("Erreur lors de la mise à jour de la table profils:", dbError);
-                // We still count it as a success for the user if auth updated, but log the db error
-                setMessage('Profil mis à jour (sync partielle).');
-            } else {
-                setMessage('Profil mis à jour avec succès !');
-            }
-        }
-
-        setSaving(false);
-        setTimeout(() => setMessage(''), 3000);
-    };
-
     const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
