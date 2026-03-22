@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { supabase } from '../lib/supabase';
 import confetti from 'canvas-confetti';
 import './TaskDetails.css';
@@ -37,6 +38,18 @@ export function TaskDetails({ task, onNavigate, user }: TaskDetailsProps) {
     const [editDescription, setEditDescription] = useState('');
     const [editSaving, setEditSaving] = useState(false);
     const [currentTask, setCurrentTask] = useState(task);
+
+    // Audio Recording State
+    const [isRecording, setIsRecording] = useState(false);
+    const [isTranscribing, setIsTranscribing] = useState(false);
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const audioChunksRef = useRef<Blob[]>([]);
+
+    // Audio Subtask Recording State
+    const [isSubtaskRecording, setIsSubtaskRecording] = useState(false);
+    const [isSubtaskTranscribing, setIsSubtaskTranscribing] = useState(false);
+    const subtaskMediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const subtaskAudioChunksRef = useRef<Blob[]>([]);
 
     useEffect(() => {
         if (!task?.id) return;
@@ -106,6 +119,27 @@ export function TaskDetails({ task, onNavigate, user }: TaskDetailsProps) {
         }
     };
 
+    const submitLog = async (logContent: string) => {
+        if (!logContent.trim()) return;
+
+        const newLog = {
+            tache_id: task.id,
+            utilisateur_id: user.id,
+            type: logType,
+            contenu: logContent.trim()
+        };
+
+        const { error } = await supabase.from('logs_tache').insert(newLog);
+        if (!error) {
+            fetchLogs();
+            if (newItemText === logContent) {
+                 setNewItemText('');
+            }
+        } else {
+            console.error('Erreur insertion log:', error);
+        }
+    };
+
     const handleAddItem = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         if (!newItemText.trim()) return;
@@ -127,25 +161,171 @@ export function TaskDetails({ task, onNavigate, user }: TaskDetailsProps) {
                 setNewItemText('');
             }
         } else if (activeTab === 'logs') {
-            const newLog = {
-                tache_id: task.id,
-                utilisateur_id: user.id,
-                type: logType,
-                contenu: newItemText.trim()
+            await submitLog(newItemText.trim());
+        }
+    };
+
+    // --- AUDIO LOGIC ---
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorderRef.current = new MediaRecorder(stream);
+            audioChunksRef.current = [];
+
+            mediaRecorderRef.current.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunksRef.current.push(event.data);
+                }
             };
 
-            const { data, error } = await supabase
-                .from('logs_tache')
-                .insert(newLog)
-                .select();
+            mediaRecorderRef.current.onstop = async () => {
+                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                await handleTranscription(audioBlob);
+            };
 
-            if (data && !error) {
-                setNewItemText('');
-                // Explicitly re-fetch to get the log with profile data
-                fetchLogs();
-            } else {
-                console.error('Erreur insertion log:', error);
+            mediaRecorderRef.current.start();
+            setIsRecording(true);
+        } catch (err) {
+            console.error("Erreur accès microphone:", err);
+            alert("Impossible d'accéder au microphone.");
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+            mediaRecorderRef.current.stop();
+            // Free the microphone resource
+            mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+            setIsRecording(false);
+        }
+    };
+
+    const handleTranscription = async (audioBlob: Blob) => {
+        setIsTranscribing(true);
+        try {
+            const { data: sessionData } = await supabase.auth.getSession();
+            const token = sessionData?.session?.access_token;
+            if (!token) return;
+
+            const formData = new FormData();
+            formData.append('file', audioBlob, 'audio.webm');
+
+            const { data, error } = await supabase.functions.invoke('transcrire-audio', {
+                body: formData,
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (error) {
+                if (error.context) {
+                    const ctx = await error.context.json();
+                    throw new Error(ctx.error || ctx.message || "Erreur inconnue");
+                }
+                throw error;
             }
+            
+            if (data && data.texte) {
+                // Instantly submit the transcribed text as a log
+                await submitLog(data.texte);
+            }
+        } catch (err) {
+            console.error("Erreur de transcription:", err);
+            alert("La transcription a échoué.");
+        } finally {
+            setIsTranscribing(false);
+        }
+    };
+
+    // --- AUDIO SUBTASK LOGIC ---
+    const startSubtaskRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            subtaskMediaRecorderRef.current = new MediaRecorder(stream);
+            subtaskAudioChunksRef.current = [];
+
+            subtaskMediaRecorderRef.current.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    subtaskAudioChunksRef.current.push(event.data);
+                }
+            };
+
+            subtaskMediaRecorderRef.current.onstop = async () => {
+                const audioBlob = new Blob(subtaskAudioChunksRef.current, { type: 'audio/webm' });
+                await handleSubtaskTranscription(audioBlob);
+            };
+
+            subtaskMediaRecorderRef.current.start();
+            setIsSubtaskRecording(true);
+        } catch (err) {
+            console.error("Erreur accès microphone pour sous-tâche:", err);
+            alert("Impossible d'accéder au microphone.");
+        }
+    };
+
+    const stopSubtaskRecording = () => {
+        if (subtaskMediaRecorderRef.current && subtaskMediaRecorderRef.current.state !== "inactive") {
+            subtaskMediaRecorderRef.current.stop();
+            subtaskMediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+            setIsSubtaskRecording(false);
+        }
+    };
+
+    const handleSubtaskTranscription = async (audioBlob: Blob) => {
+        setIsSubtaskTranscribing(true);
+        try {
+            const { data: sessionData } = await supabase.auth.getSession();
+            const token = sessionData?.session?.access_token;
+            if (!token) return;
+
+            const membersList = members.map(m => ({ id: m.utilisateur_id, nom: m.profils?.nom }));
+
+            const formData = new FormData();
+            formData.append('file', audioBlob, 'audio.webm');
+            formData.append('currentDate', new Date().toISOString().split('T')[0]);
+            formData.append('membersList', JSON.stringify(membersList));
+
+            const { data, error } = await supabase.functions.invoke('assistant-vocal-tache', {
+                body: formData,
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (error) {
+                if (error.context) {
+                    const ctx = await error.context.json();
+                    throw new Error(ctx.error || ctx.message || "Erreur interne de l'Edge Function");
+                }
+                throw error;
+            }
+            
+            if (data && data.subtask && data.subtask.titre) {
+                const draft = data.subtask;
+                
+                const newTask = {
+                    tache_id: task.id,
+                    titre: draft.titre,
+                    statut: 'en_attente',
+                    assigne_a: draft.assigne_a || null,
+                    date_debut: draft.date_debut || null,
+                    date_fin: draft.date_fin || null
+                };
+
+                const { data: inserted, error: insertError } = await supabase
+                    .from('sous_taches')
+                    .insert(newTask)
+                    .select('*, profils:assigne_a(nom, avatar_url)');
+
+                if (inserted && !insertError) {
+                    setSubTasks([...subTasks, inserted[0]]);
+                } else {
+                    console.error("Erreur insertion IA sous-tâche:", insertError);
+                }
+            } else {
+               alert("Impossible de comprendre la tâche. L'IA n'a pas pu extraire de titre.");
+            }
+        } catch (err: any) {
+            console.error("Erreur de transcription IA:", err);
+            alert("La création de la sous-tâche a échoué: " + (err.message || "Erreur réseau"));
+        } finally {
+            setIsSubtaskTranscribing(false);
         }
     };
 
@@ -519,7 +699,13 @@ export function TaskDetails({ task, onNavigate, user }: TaskDetailsProps) {
                         <div className="td-card-header">
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 {currentTask.icone_url ? (
-                                    <img src={currentTask.icone_url} alt="Icon" style={{ width: '2rem', height: '2rem', borderRadius: '50%' }} />
+                                    currentTask.icone_url.startsWith('http') ? (
+                                        <img src={currentTask.icone_url} alt="Icon" style={{ width: '2rem', height: '2rem', borderRadius: '50%' }} />
+                                    ) : (
+                                        <div style={{ width: '2rem', height: '2rem', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <span className="material-symbols-outlined" style={{ fontSize: '1.25rem' }}>{currentTask.icone_url}</span>
+                                        </div>
+                                    )
                                 ) : (
                                     <span className="td-priority-badge">Tâche</span>
                                 )}
@@ -544,16 +730,18 @@ export function TaskDetails({ task, onNavigate, user }: TaskDetailsProps) {
                             </div>
                         </div>
 
-                        <div className="mt-4 flex justify-end">
-                            <button
-                                onClick={handleAnalyzeTask}
-                                className="px-4 py-2 bg-[#00a651]/20 text-[#34d399] border border-[#00a651]/40 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold hover:bg-[#00a651]/30 transition-all shadow-[0_4px_15px_rgba(0, 166, 81,0.2)]"
-                            >
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
-                                </svg> Analyse IA
-                            </button>
-                        </div>
+                        {isAdmin && (
+                            <div className="mt-4 flex justify-end">
+                                <button
+                                    onClick={handleAnalyzeTask}
+                                    className="px-4 py-2 bg-[#00a651]/20 text-[#34d399] border border-[#00a651]/40 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold hover:bg-[#00a651]/30 transition-all shadow-[0_4px_15px_rgba(0, 166, 81,0.2)]"
+                                >
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+                                    </svg> Analyse IA
+                                </button>
+                            </div>
+                        )}
                     </section>
                 </main>
 
@@ -815,7 +1003,21 @@ export function TaskDetails({ task, onNavigate, user }: TaskDetailsProps) {
                                         );
                                     })}
                                     {subTasks.length === 0 && (
-                                        <p style={{ textAlign: 'center', color: '#64748b', fontSize: '0.875rem' }}>Aucune sous-tâche pour le moment.</p>
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem 1rem' }}>
+                                            <div style={{ width: '100%', maxWidth: '280px', aspectRatio: '1/1', opacity: 0.9, marginBottom: '1.5rem' }}>
+                                                <DotLottieReact
+                                                    src="https://lottie.host/020e5ef9-b972-44ca-a47f-166c34509e77/6gf3MEjI9P.lottie"
+                                                    loop
+                                                    autoplay
+                                                />
+                                            </div>
+                                            <h4 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600, color: '#f8fafc', textAlign: 'center' }}>
+                                                Aucune sous-tâche
+                                            </h4>
+                                            <p style={{ marginTop: '0.5rem', marginBottom: 0, fontSize: '0.9rem', color: '#94a3b8', textAlign: 'center', maxWidth: '300px' }}>
+                                                Découpez cette tâche en éléments plus simples pour avancer plus vite !
+                                            </p>
+                                        </div>
                                     )}
                                 </div>
                             )}
@@ -823,7 +1025,7 @@ export function TaskDetails({ task, onNavigate, user }: TaskDetailsProps) {
                     )}
 
                     {activeTab === 'logs' && (
-                        <LogSection logs={logs} />
+                        <LogSection logs={logs} currentUserId={user.id} />
                     )}
                 </div>
 
@@ -861,15 +1063,51 @@ export function TaskDetails({ task, onNavigate, user }: TaskDetailsProps) {
                                 </div>
                             )}
 
-                            <div className="td-input-row">
+                            <div className="td-input-row" style={{ position: 'relative' }}>
+                                {(isRecording || isTranscribing || isSubtaskRecording || isSubtaskTranscribing) && (
+                                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', padding: '0 1rem', borderRadius: 'inherit', zIndex: 10, gap: '1rem', color: (isRecording || isSubtaskRecording) ? '#ef4444' : (isSubtaskTranscribing ? '#a855f7' : '#34d399') }}>
+                                        <span className="material-symbols-outlined" style={{ animation: (isRecording || isSubtaskRecording) ? 'pulse 1.5s infinite' : 'spin 1s linear infinite' }}>
+                                            {(isRecording || isSubtaskRecording) ? 'radio_button_checked' : (isSubtaskTranscribing ? 'auto_awesome' : 'autorenew')}
+                                        </span>
+                                        <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>
+                                            {(isRecording || isSubtaskRecording) ? 'Enregistrement en cours...' : (isSubtaskTranscribing ? 'Analyse de la voix par l\'IA...' : 'Transcription en cours...')}
+                                        </span>
+                                        {(isRecording || isSubtaskRecording) && (
+                                            <button type="button" onClick={isRecording ? stopRecording : stopSubtaskRecording} style={{ marginLeft: 'auto', background: '#ef4444', color: 'white', border: 'none', borderRadius: '99px', padding: '0.25rem 0.75rem', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}>
+                                                {isSubtaskRecording ? 'Analyser' : 'Transcrire'}
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
                                 <input
                                     className="td-input"
                                     type="text"
                                     placeholder={activeTab === 'subtasks' ? "Ajouter une sous-tâche..." : "Décrire votre avancement ou blocage..."}
                                     value={newItemText}
                                     onChange={(e) => setNewItemText(e.target.value)}
+                                    disabled={isRecording || isTranscribing || isSubtaskRecording || isSubtaskTranscribing}
                                 />
-                                <button type="submit" className="td-add-btn">
+                                {activeTab === 'subtasks' && isAdmin && (
+                                    <button 
+                                        type="button" 
+                                        onClick={startSubtaskRecording}
+                                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', color: '#a855f7', cursor: 'pointer', padding: '0.5rem', borderRadius: '50%', transition: 'all 0.2s' }}
+                                        title="Créer une sous-tâche par la voix (IA)"
+                                    >
+                                        <span className="material-symbols-outlined">auto_awesome</span>
+                                    </button>
+                                )}
+                                {activeTab === 'logs' && (
+                                    <button 
+                                        type="button" 
+                                        onClick={startRecording}
+                                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '0.5rem', borderRadius: '50%', transition: 'all 0.2s' }}
+                                        title="Dicter un log vocalement"
+                                    >
+                                        <span className="material-symbols-outlined">mic</span>
+                                    </button>
+                                )}
+                                <button type="submit" className="td-add-btn" disabled={isRecording || isTranscribing || isSubtaskRecording || isSubtaskTranscribing}>
                                     {activeTab === 'subtasks' ? (
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                                     ) : (

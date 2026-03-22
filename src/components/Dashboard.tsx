@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import confetti from 'canvas-confetti';
 import './Dashboard.css';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOut: () => void, onNavigate: (page: string, data?: any) => void }) {
     const [advice, setAdvice] = useState<string>("Chargement de vos conseils productivité...");
@@ -243,7 +244,48 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
                     {loading ? (
                         <p style={{ textAlign: 'center', opacity: 0.5 }}>Loading tasks...</p>
                     ) : tasks.length === 0 ? (
-                        <p style={{ textAlign: 'center', opacity: 0.5 }}>No individual tasks found.</p>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1rem', width: '100%', minHeight: '50vh' }}>
+                            <div style={{ width: '100%', maxWidth: '350px', aspectRatio: '1/1', opacity: 0.9 }}>
+                                <DotLottieReact
+                                    src="https://lottie.host/31f1660d-f0aa-4783-88dc-e7a599cf3762/CzoE9pdrSW.lottie"
+                                    loop
+                                    autoplay
+                                />
+                            </div>
+                            <h3 style={{ margin: '1rem 0 0', fontSize: '1.25rem', fontWeight: 600, color: '#f8fafc', textAlign: 'center' }}>
+                                Aucune tâche individuelle
+                            </h3>
+                            <button 
+                                onClick={() => onNavigate('create')}
+                                style={{
+                                    marginTop: '2rem',
+                                    background: 'var(--color-primary)',
+                                    color: 'white',
+                                    border: 'none',
+                                    padding: '0.75rem 1.75rem',
+                                    borderRadius: '99px',
+                                    fontWeight: 600,
+                                    fontSize: '1rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem',
+                                    boxShadow: '0 4px 15px rgba(0, 166, 81, 0.4)',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1.05) translateY(-2px)';
+                                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 166, 81, 0.6)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'scale(1) translateY(0)';
+                                    e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 166, 81, 0.4)';
+                                }}
+                            >
+                                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>add</span>
+                                Nouvelle tâche
+                            </button>
+                        </div>
                     ) : (
                         tasks.map(task => {
                             const timeStatus = (task.date_debut && task.date_echeance) ? getTimeStatus(task.date_debut, task.date_echeance) : { percent: 0, state: 'normal' };

@@ -57,7 +57,7 @@ export const InviteMemberModal: React.FC<InviteMemberModalProps> = ({ taskId, on
                     tache_id: taskId,
                     utilisateur_id: contactId,
                     role: 'membre',
-                    statut: 'en_attente'
+                    statut: 'accepte'
                 });
 
             if (error) throw error;

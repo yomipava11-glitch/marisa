@@ -1,0 +1,73 @@
+@startuml UseCase_Complete_Expert
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam actorStyle awesome
+
+actor "Utilisateur Authentifié" as U
+actor "Membre (Collaborateur)" as M
+actor "Admin de Tâche (Créateur)" as A
+actor "Système IA" as IA
+
+rectangle "Système gestionTask" {
+    
+    package "Gestion de Compte & Social" {
+        usecase "UC1: Gérer Profil & Avatar" as UC1
+        usecase "UC2: Consulter Stats & XP" as UC2
+        usecase "UC3: Gérer Contacts Permanents" as UC3
+        usecase "UC4: Consulter Notifications" as UC4
+    }
+    
+    package "Gestion des Tâches" {
+        usecase "UC5: Créer une Tâche Groupée" as UC5
+        usecase "UC6: Modifier/Supprimer la Tâche" as UC6
+        usecase "UC7: Assigner des Sous-tâches" as UC7
+        usecase "UC8: Valider ses Tâches" as UC8
+        usecase "UC9: Ajouter des Logs/Notes" as UC9
+    }
+    
+    package "Collaboration d'Équipe" {
+        usecase "UC10: Inviter/Retirer des Membres" as UC10
+        usecase "UC11: Répondre à une Invitation" as UC11
+        usecase "UC12: Consulter le Flux d'activité" as UC12
+    }
+    
+    package "Services IA" {
+        usecase "UC13: Générer Sous-tâches IA" as UC13
+        usecase "UC14: Analyser Santé du Projet" as UC14
+        usecase "UC15: Recevoir Coaching Scrum" as UC15
+    }
+
+}
+
+' Relations de base Utilisateur
+U -- UC1
+U -- UC2
+U -- UC3
+U -- UC4
+U -- UC5
+
+' Rôle Membre (quand invité sur Tâche B)
+M -- UC11
+M -- UC12
+M -- UC8
+M -- UC9
+
+' Rôle Admin (quand propriétaire de Tâche A)
+A -- UC6
+A -- UC10
+A -- UC7
+A -- UC13
+A -- UC14
+
+' Système IA
+IA -- UC13
+IA -- UC14
+IA -- UC15
+UC15 ..> U : fournit conseils
+
+' Héritage de rôle technique
+A -|> U
+M -|> U
+
+@enduml

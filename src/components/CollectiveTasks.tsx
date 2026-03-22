@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import './CollectiveTasks.css';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (page: string, data?: any) => void }) {
     const [tasks, setTasks] = useState<any[]>([]);
@@ -8,6 +9,8 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
     const allowedTaskIdsRef = useRef<string[]>([]);
     const [pendingInvitesCount, setPendingInvitesCount] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         fetchCollectiveTasks();
@@ -55,7 +58,7 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
 
         const { data } = await supabase
             .from('taches')
-            .select('*, est_important, membres_tache(utilisateur_id, role), sous_taches(id, statut)')
+            .select('*, est_important, membres_tache(utilisateur_id, role, statut, profils(nom, avatar_url)), sous_taches(id, statut)')
             .eq('est_collectif', true)
             .neq('statut', 'supprimee')
             .or(orClause);
@@ -193,12 +196,76 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
                 <section>
                     <div className="section-header">
                         <h2 className="section-title">Active Group Tasks</h2>
+                        <button className="icon-button" onClick={() => setIsSearchOpen(!isSearchOpen)} style={{ background: isSearchOpen ? 'rgba(0, 166, 81, 0.2)' : 'transparent', color: isSearchOpen ? '#34d399' : '#f8fafc', transition: 'all 0.3s' }}>
+                            <span className="material-symbols-outlined">search</span>
+                        </button>
                     </div>
+
+                    {/* Search Bar Ploub Animation */}
+                    <div className={`search-bar-container ${isSearchOpen ? 'open' : ''}`}>
+                        <div className="search-bar-inner">
+                            <span className="material-symbols-outlined search-icon-inner">search</span>
+                            <input 
+                                type="text"
+                                placeholder="Rechercher une tâche (titre, description)..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="search-input"
+                            />
+                            {searchQuery && (
+                                <button className="icon-button" style={{ transform: 'scale(0.8)', opacity: 0.7 }} onClick={() => setSearchQuery('')}>
+                                    <span className="material-symbols-outlined">close</span>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
                     <div className="tasks-grid">
                         {tasks.length === 0 && !loading && (
-                            <p style={{ opacity: 0.5, fontSize: '0.875rem' }}>No collective tasks found.</p>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1rem', width: '100%', minHeight: '50vh', gridColumn: '1 / -1' }}>
+                                <div style={{ width: '100%', maxWidth: '350px', aspectRatio: '1/1', opacity: 0.9 }}>
+                                    <DotLottieReact
+                                        src="https://lottie.host/12af6790-384a-46ce-a23c-4e97c4d5ba79/sSJyw5g6gX.lottie"
+                                        loop
+                                        autoplay
+                                    />
+                                </div>
+                                <h3 style={{ margin: '1rem 0 0', fontSize: '1.25rem', fontWeight: 600, color: '#f8fafc', textAlign: 'center' }}>
+                                    Aucune tâche collective
+                                </h3>
+                                <button 
+                                    onClick={() => onNavigate('create')}
+                                    style={{
+                                        marginTop: '2rem',
+                                        background: 'var(--color-primary)',
+                                        color: 'white',
+                                        border: 'none',
+                                        padding: '0.75rem 1.75rem',
+                                        borderRadius: '99px',
+                                        fontWeight: 600,
+                                        fontSize: '1rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        boxShadow: '0 4px 15px rgba(0, 166, 81, 0.4)',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = 'scale(1.05) translateY(-2px)';
+                                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 166, 81, 0.6)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'scale(1) translateY(0)';
+                                        e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 166, 81, 0.4)';
+                                    }}
+                                >
+                                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>add</span>
+                                    Nouvelle tâche
+                                </button>
+                            </div>
                         )}
-                        {tasks.map(task => {
+                        {tasks.filter(t => t.titre?.toLowerCase().includes(searchQuery.toLowerCase()) || t.description?.toLowerCase().includes(searchQuery.toLowerCase())).map(task => {
                             const timeStatus = (task.date_debut && task.date_echeance) ? getTimeStatus(task.date_debut, task.date_echeance) : { percent: 0, state: 'normal' };
                             const isCompleted = task.statut === 'terminee';
                             const totalSub = task.sous_taches?.length || 0;
@@ -215,18 +282,26 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
                                     <div className="task-card-header">
                                         <div className="task-icon-box">
                                             {task.icone_url ? (
-                                                <img src={task.icone_url} alt="Task Icon" style={{ width: '100%', height: '100%', borderRadius: 'inherit' }} />
+                                                task.icone_url.startsWith('http') ? (
+                                                    <img src={task.icone_url} alt="Task Icon" style={{ width: '100%', height: '100%', borderRadius: 'inherit' }} />
+                                                ) : (
+                                                    <span className="material-symbols-outlined" style={{ fontSize: '1.875rem' }}>{task.icone_url}</span>
+                                                )
                                             ) : (
                                                 <span className="material-symbols-outlined" style={{ fontSize: '1.875rem' }}>auto_awesome</span>
                                             )}
                                         </div>
                                         <div className="avatars-stack">
-                                            <img src={user.user_metadata?.avatar_url || "https://ui-avatars.com/api/?name=User"} className="stack-avatar" alt="User" />
-                                            {task.membres_tache?.slice(0, 2).map((_: any, i: number) => (
-                                                <div key={i} className="stack-avatar" style={{ backgroundColor: '#475569' }}></div>
-                                            ))}
-                                            {task.membres_tache?.length > 2 && (
-                                                <div className="stack-more">+{task.membres_tache.length - 2}</div>
+                                            <img src={user.user_metadata?.avatar_url || "https://ui-avatars.com/api/?name=" + (user.user_metadata?.full_name || 'U')} className="stack-avatar" alt="User" title="Moi" />
+                                            {task.membres_tache?.filter((m:any) => m.utilisateur_id !== user.id).slice(0, 2).map((member: any, i: number) => {
+                                                const nom = member.profils?.nom || 'Membre';
+                                                const avatarUrl = member.profils?.avatar_url || "https://ui-avatars.com/api/?name=" + nom + "&color=fff&background=random";
+                                                return (
+                                                    <img key={i} src={avatarUrl} className="stack-avatar" alt={nom} title={nom} />
+                                                );
+                                            })}
+                                            {task.membres_tache?.filter((m:any) => m.utilisateur_id !== user.id).length > 2 && (
+                                                <div className="stack-more">+{task.membres_tache.filter((m:any) => m.utilisateur_id !== user.id).length - 2}</div>
                                             )}
                                         </div>
                                     </div>

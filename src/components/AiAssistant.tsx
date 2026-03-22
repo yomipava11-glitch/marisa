@@ -66,31 +66,52 @@ export function AiAssistant({ onNavigate }: AiAssistantProps) {
             const token = sessionData?.session?.access_token;
             if (!token) throw new Error('Session expirée');
 
-            const { data: result, error: fnError } = await supabase.functions.invoke('ai-scrum-master', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const { data: result, error: fnError } = await supabase.functions.invoke('ai-scrum-master');
 
             if (fnError) {
                 // Try to extract the actual error message
                 let msg = fnError.message;
                 try {
                     if (fnError.context) {
-                        const ctx = await fnError.context.json();
+                        const responseClone = fnError.context.clone();
+                        const ctx = await responseClone.json();
                         msg = ctx.error || msg;
                     }
-                } catch { }
+                } catch (e) { 
+                    console.error("Could not parse error context", e);
+                }
                 throw new Error(msg);
             }
             setData(result);
         } catch (err: any) {
             console.error('AI Analysis error:', err);
-            // Auto-retry once on server errors (cold start, timeout)
-            if (retryCount < 1) {
+            const isNonRetryable = 
+                err.message?.includes('rate_limit') || 
+                err.message?.includes('Rate limit reached') || 
+                err.message?.includes('429') || 
+                err.message?.includes('401') || 
+                err.message?.includes('Unauthorized') || 
+                err.message?.includes('non-2xx status code');
+            
+            // Auto-retry once on server errors (cold start, timeout), but NOT on known permanent errors
+            if (retryCount < 1 && !isNonRetryable) {
                 console.log('Retrying AI analysis...');
                 setTimeout(() => fetchAnalysis(retryCount + 1), 1500);
                 return;
             }
-            setError(err.message || 'Erreur de connexion');
+            
+            if (isNonRetryable) {
+                if (err.message?.includes('401') || err.message?.includes('Unauthorized')) {
+                    setError("Session non autorisée. Veuillez vous reconnecter.");
+                } else if (err.message?.includes('non-2xx')) {
+                    // Edge function unhandled error
+                    setError("Erreur du serveur (API Scrum Master indisponible temporairement).");
+                } else {
+                    setError("La limite d'utilisation de l'IA a été atteinte. Veuillez patienter quelques instants.");
+                }
+            } else {
+                setError(err.message || 'Erreur de connexion');
+            }
         } finally {
             if (retryCount > 0 || !error) setLoading(false);
         }
@@ -309,7 +330,7 @@ export function AiAssistant({ onNavigate }: AiAssistantProps) {
                                                 </div>
                                                 <div className="sm-assign-info">
                                                     <h5>{a.taskTitle}</h5>
-                                                    <p>→ <strong>{a.suggestedUser}</strong></p>
+                                                    <p>→ <strong>{typeof a.suggestedUser === 'string' ? a.suggestedUser : a.suggestedUser?.name}</strong></p>
                                                 </div>
                                             </div>
                                             <div className="sm-assign-reason">

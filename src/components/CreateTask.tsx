@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import './CreateTask.css';
 
@@ -16,6 +16,117 @@ export function CreateTask({ user, onNavigate }: { user: any, onNavigate: (page:
     });
     const [dueTime, setDueTime] = useState('10:00');
     const [estImportant, setEstImportant] = useState(false); // New Important Flag
+
+    const [allProfiles, setAllProfiles] = useState<any[]>([]);
+    const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+    
+    // Voice Recording states
+    const [isRecording, setIsRecording] = useState(false);
+    const [isTranscribing, setIsTranscribing] = useState(false);
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const audioChunksRef = useRef<Blob[]>([]);
+
+    useEffect(() => {
+        fetchProfiles();
+    }, []);
+
+    const fetchProfiles = async () => {
+        const { data } = await supabase
+            .from('contacts_permanents')
+            .select('*, profils!contacts_permanents_contact_id_fkey(id, nom, avatar_url, email)')
+            .eq('proprietaire_id', user.id)
+            .eq('statut', 'accepte');
+            
+        if (data) {
+            const contactsList = data.map((c: any) => c.profils).filter(Boolean);
+            setAllProfiles(contactsList as any[]);
+        }
+    };
+
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorderRef.current = new MediaRecorder(stream);
+            audioChunksRef.current = [];
+
+            mediaRecorderRef.current.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    audioChunksRef.current.push(event.data);
+                }
+            };
+
+            mediaRecorderRef.current.onstop = async () => {
+                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                await handleTranscription(audioBlob);
+            };
+
+            mediaRecorderRef.current.start();
+            setIsRecording(true);
+        } catch (error) {
+            console.error("Microphone access error:", error);
+            alert("Erreur d'accès au microphone.");
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+            mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+        }
+    };
+
+    const handleTranscription = async (audioBlob: Blob) => {
+        setIsTranscribing(true);
+        try {
+            const { data: session } = await supabase.auth.getSession();
+            const token = session?.session?.access_token;
+            if (!token) throw new Error("Non authentifié");
+
+            const formData = new FormData();
+            formData.append('file', audioBlob, 'audio.webm');
+            formData.append('currentDate', new Date().toISOString().split('T')[0]);
+            
+            const membersList = allProfiles.map(p => ({ id: p.id, nom: p.nom }));
+            formData.append('membersList', JSON.stringify(membersList));
+
+            const { data, error } = await supabase.functions.invoke('assistant-vocal-creation-tache', {
+                body: formData,
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (error) {
+                if (error.context) {
+                    const ctx = await error.context.json();
+                    throw new Error(ctx.error || ctx.message || "Erreur inconnue");
+                }
+                throw error;
+            }
+
+            if (data && data.task_draft) {
+                const draft = data.task_draft;
+                if (draft.titre) setTitle(draft.titre);
+                if (draft.description) setDescription(draft.description);
+                if (draft.est_collectif !== undefined) setType(draft.est_collectif ? 'collective' : 'individual');
+                if (draft.est_prioritaire !== undefined) setEstImportant(draft.est_prioritaire);
+                
+                if (draft.date_debut) setStartDate(draft.date_debut.slice(0, 16));
+                else setStartDate('');
+
+                if (draft.date_fin) setDueDate(draft.date_fin.split('T')[0]);
+                if (draft.heure_fin) setDueTime(draft.heure_fin);
+
+                if (draft.membres_assignes && Array.isArray(draft.membres_assignes)) {
+                    setSelectedMembers(draft.membres_assignes);
+                }
+            }
+        } catch (err: any) {
+            console.error("Erreur IA:", err);
+            alert("Erreur lors de la création vocale: " + (err.message || "Réseau"));
+        } finally {
+            setIsTranscribing(false);
+        }
+    };
 
     const handleCreate = async () => {
         if (!title) return;
@@ -50,12 +161,28 @@ export function CreateTask({ user, onNavigate }: { user: any, onNavigate: (page:
         }).select().single();
 
         if (task && type === 'collective') {
-            // Auto-add creator as admin member
-            await supabase.from('membres_tache').insert({
+            const membersToInsert = [];
+            membersToInsert.push({
                 tache_id: task.id,
                 utilisateur_id: user.id,
-                role: 'admin'
+                role: 'admin',
+                statut: 'accepte'
             });
+
+            if (selectedMembers.length > 0) {
+                 selectedMembers.forEach(id => {
+                     if (id !== user.id) {
+                         membersToInsert.push({
+                             tache_id: task.id,
+                             utilisateur_id: id,
+                             role: 'interprete',
+                             statut: 'en_attente'
+                         });
+                     }
+                 });
+            }
+
+            await supabase.from('membres_tache').insert(membersToInsert);
 
             // Log creation in activity feed
             await supabase.from('flux_activite').insert({
@@ -83,6 +210,41 @@ export function CreateTask({ user, onNavigate }: { user: any, onNavigate: (page:
             </header>
 
             <div className="scroll-content">
+                {/* Voice AI Banner */}
+                <div style={{ marginBottom: '1.5rem' }}>
+                    <div className={`ai-voice-banner ${isRecording ? 'recording' : ''} ${isTranscribing ? 'transcribing' : ''}`}
+                         onClick={isRecording ? stopRecording : (isTranscribing ? undefined : startRecording)}
+                         style={{ 
+                             display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', 
+                             borderRadius: '1rem', background: isRecording ? 'rgba(239, 68, 68, 0.1)' : 'rgba(34, 197, 94, 0.1)',
+                             border: isRecording ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(34, 197, 94, 0.3)',
+                             cursor: isTranscribing ? 'not-allowed' : 'pointer', transition: 'all 0.3s'
+                         }}>
+                        <div style={{
+                            width: '3rem', height: '3rem', borderRadius: '50%', 
+                            background: isRecording ? '#ef4444' : '#22c55e', 
+                            display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'center',
+                            boxShadow: isRecording ? '0 0 15px rgba(239,68,68,0.5)' : 'none',
+                            animation: isRecording ? 'pulse 1.5s infinite' : 'none'
+                        }}>
+                            <span className="material-symbols-outlined" style={{ color: 'white', fontSize: '1.5rem', marginTop: '2px' }}>
+                                {isRecording ? 'stop' : (isTranscribing ? 'hourglass_empty' : 'mic')}
+                            </span>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <h3 style={{ margin: 0, fontSize: '1rem', color: isRecording ? '#ef4444' : '#34d399', fontWeight: 600 }}>
+                                {isRecording ? 'Écoute en cours...' : (isTranscribing ? 'Analyse par l\'IA...' : 'Création Vocale')}
+                            </h3>
+                            <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>
+                                {isRecording ? 'Touchez pour arrêter' : (isTranscribing ? 'Transformation magique en tâche...' : 'Dictez le titre, les dates, les personnes...')}
+                            </p>
+                        </div>
+                        {!isRecording && !isTranscribing && (
+                            <span className="material-symbols-outlined" style={{ color: '#34d399' }}>auto_awesome</span>
+                        )}
+                    </div>
+                </div>
+
                 {/* Title */}
                 <div className="form-field">
                     <label className="field-label">Titre de la tâche</label>
@@ -162,10 +324,17 @@ export function CreateTask({ user, onNavigate }: { user: any, onNavigate: (page:
                 {/* Collaborative Section (Demo only for members) */}
                 {type === 'collective' && (
                     <div className="form-field">
-                        <label className="field-label">Membres de l'équipe</label>
+                        <label className="field-label">Membres de l'équipe (assignés par l'IA)</label>
                         <div className="team-members-row">
                             <img src={user.user_metadata?.avatar_url || "https://ui-avatars.com/api/?name=" + (user.user_metadata?.full_name || 'U')} className="member-avatar selected" alt="You" />
-                            <button className="add-member-btn">
+                            {selectedMembers.filter(id => id !== user.id).map(id => {
+                                const profile = allProfiles.find(p => p.id === id);
+                                if (!profile) return null;
+                                return (
+                                    <img key={id} src={profile.avatar_url || "https://ui-avatars.com/api/?name=" + profile.nom} className="member-avatar selected" alt={profile.nom} title={profile.nom} />
+                                );
+                            })}
+                            <button className="add-member-btn" title="L'ajout manuel arrivera bientôt">
                                 <span className="material-symbols-outlined">add</span>
                             </button>
                         </div>

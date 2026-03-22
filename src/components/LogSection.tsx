@@ -1,3 +1,4 @@
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 // Native relative time formatter — no external library needed
 function timeAgo(dateStr: string): string {
@@ -21,6 +22,7 @@ interface Log {
     type: 'fait' | 'probleme' | 'prevu';
     contenu: string;
     cree_le: string;
+    utilisateur_id: string;
     profils: {
         nom: string;
         avatar_url: string;
@@ -29,10 +31,19 @@ interface Log {
 
 interface LogSectionProps {
     logs: Log[];
+    currentUserId: string;
 }
 
-export function LogSection({ logs }: LogSectionProps) {
-    const getBadgeStyle = (type: string) => {
+export function LogSection({ logs, currentUserId }: LogSectionProps) {
+    const getBadgeStyle = (type: string, isMe: boolean) => {
+        if (isMe) {
+            switch (type) {
+                case 'probleme': return 'bg-white/20 text-red-200 border-white/30';
+                case 'fait': return 'bg-white/20 text-white border-white/30';
+                case 'prevu': return 'bg-white/20 text-blue-200 border-white/30';
+                default: return 'bg-white/20 text-white border-white/30';
+            }
+        }
         switch (type) {
             case 'probleme':
                 return 'bg-red-500/20 text-red-400 border-red-500/30';
@@ -56,46 +67,63 @@ export function LogSection({ logs }: LogSectionProps) {
 
     if (!logs || logs.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center p-8 text-center text-white/50 bg-white/5 backdrop-blur-md rounded-2xl border border-white/5">
-                <svg className="w-12 h-12 mb-3 opacity-50 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-                </svg>
-                <p>Aucun journal pour le moment.</p>
-                <p className="text-sm mt-1">Commencez à documenter l'avancement !</p>
+            <div className="flex flex-col items-center justify-center py-8">
+                <div style={{ width: '100%', maxWidth: '280px', aspectRatio: '1/1', opacity: 0.9, marginBottom: '1.5rem' }}>
+                    <DotLottieReact
+                        src="https://lottie.host/99b0d1dd-e64d-4435-bdf6-70efcd7062cb/SHipTflN9r.lottie"
+                        loop
+                        autoplay
+                    />
+                </div>
+                <h4 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 600, color: '#f8fafc', textAlign: 'center' }}>
+                    Aucun message dans le journal
+                </h4>
+                <p style={{ marginTop: '0.5rem', marginBottom: 0, fontSize: '0.9rem', color: '#94a3b8', textAlign: 'center', maxWidth: '300px' }}>
+                    Écrivez ou dictez votre premier log pour documenter l'avancement de la tâche.
+                </p>
             </div>
         );
     }
 
     return (
-        <div className="space-y-4 pb-4">
-            {logs.map(log => (
-                <div key={log.id} className="p-4 bg-white/5 backdrop-blur-md rounded-2xl border border-white/5 shadow-lg flex gap-4 transition-all hover:bg-white/10">
-                    <img
-                        src={log.profils?.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + log.profils?.nom}
-                        alt="avatar"
-                        className="w-10 h-10 rounded-full border border-white/10 object-cover shrink-0 bg-[#191022]"
-                    />
-                    <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
-                            <span className="font-semibold text-white/90 text-sm truncate">
-                                {log.profils?.nom || 'Utilisateur inconnu'}
-                            </span>
-                            <span className="text-xs text-white/40 flex items-center gap-1 shrink-0">
-                                <span className="material-symbols-rounded !text-[14px]">schedule</span>
-                                {timeAgo(log.cree_le)}
-                            </span>
+        <div className="space-y-4 pb-4 px-2 flex flex-col-reverse">
+            {/* The flex-col-reverse makes the visual order reversed, so new messages are at the bottom while DOM retains them at the top (which matches order by cree_le descending) */}
+            {logs.map(log => {
+                const isMe = log.utilisateur_id === currentUserId;
+
+                return (
+                    <div key={log.id} className={`flex w-full ${isMe ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`flex max-w-[85%] gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'} items-end`}>
+                            <img
+                                src={log.profils?.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + log.profils?.nom}
+                                alt="avatar"
+                                className="w-8 h-8 rounded-full border border-white/10 object-cover shrink-0 bg-[#191022]"
+                            />
+                            
+                            <div className={`relative px-4 py-2.5 rounded-2xl shadow-md ${
+                                isMe 
+                                ? 'bg-[#00a651] text-white rounded-br-sm' 
+                                : 'bg-[#1e1b4b] border border-[#00a651]/30 text-white rounded-bl-sm'
+                            }`}>
+                                <div className="flex justify-between items-baseline mb-1 gap-4">
+                                    {!isMe && <span className="text-xs font-bold opacity-80">{log.profils?.nom || 'Utilisateur inconnu'}</span>}
+                                    <span className="text-[10px] opacity-60 ml-auto whitespace-nowrap">
+                                        {timeAgo(log.cree_le)}
+                                    </span>
+                                </div>
+                                <div className="mb-1">
+                                    <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border ${getBadgeStyle(log.type, isMe)}`}>
+                                        {getBadgeLabel(log.type)}
+                                    </span>
+                                </div>
+                                <p className={`text-sm leading-snug break-words ${isMe ? 'text-white/95' : 'text-white/80'}`}>
+                                    {log.contenu}
+                                </p>
+                            </div>
                         </div>
-                        <div className="mb-2">
-                            <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase border ${getBadgeStyle(log.type)}`}>
-                                {getBadgeLabel(log.type)}
-                            </span>
-                        </div>
-                        <p className="text-white/70 text-sm leading-relaxed break-words">
-                            {log.contenu}
-                        </p>
                     </div>
-                </div>
-            ))}
+                );
+            })}
         </div>
     );
 }
