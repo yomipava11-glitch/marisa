@@ -1,4 +1,40 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import './LandingPage.css';
+
+const Typewriter = ({ strings }: { strings: string[] }) => {
+  const [currentStringIndex, setCurrentStringIndex] = useState(0);
+  const [currentText, setCurrentText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const fullString = strings[currentStringIndex];
+
+      if (!isDeleting) {
+        setCurrentText(fullString.substring(0, currentText.length + 1));
+        if (currentText === fullString) {
+          setTimeout(() => setIsDeleting(true), 2500); // Pause on completed string
+        }
+      } else {
+        setCurrentText(fullString.substring(0, currentText.length - 1));
+        if (currentText === '') {
+          setIsDeleting(false);
+          setCurrentStringIndex((prev) => (prev + 1) % strings.length);
+        }
+      }
+    }, isDeleting ? 30 : 80);
+
+    return () => clearTimeout(timeout);
+  }, [currentText, isDeleting, currentStringIndex, strings]);
+
+  return (
+    <>
+      {currentText}
+      <span className="cursor-blink">|</span>
+    </>
+  );
+};
 import './LandingPage.css';
 
 interface LandingPageProps {
@@ -27,7 +63,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
 
           <div className="nav-links-desktop">
             <a href="#features">Fonctionnalités</a>
-            <a href="#cta">Tarifs</a>
+            <a href="#pricing">Tarifs</a>
           </div>
 
           <div className="nav-actions-desktop">
@@ -45,7 +81,7 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
         {isMobileMenuOpen && (
           <div className="mobile-menu">
             <a href="#features" onClick={() => setIsMobileMenuOpen(false)}>Fonctionnalités</a>
-            <a href="#cta" onClick={() => setIsMobileMenuOpen(false)}>Tarifs</a>
+            <a href="#pricing" onClick={() => setIsMobileMenuOpen(false)}>Tarifs</a>
             <div className="mobile-menu-divider"></div>
             <button className="mobile-menu-link" onClick={() => { setIsMobileMenuOpen(false); onLoginClick(); }}>Connexion</button>
             <button className="btn-glow mobile-menu-cta" onClick={() => { setIsMobileMenuOpen(false); onLoginClick(); }}>Commencer</button>
@@ -57,7 +93,9 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
       <section className="hero-section">
         <h1 className="hero-title">
           La gestion de tâches<br />
-          <span className="hero-title-accent">intelligente et intuitive</span>
+          <span className="hero-title-accent">
+              <Typewriter strings={["intelligente et intuitive", "rapide et efficace", "propulsée par l'IA", "collaborative"]} />
+          </span>
         </h1>
 
         <p className="hero-subtitle">
@@ -108,6 +146,24 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
         </div>
       </section>
 
+      {/* Intro / Analytics Feature - New Lottie Section */}
+      <section className="lottie-feature-section">
+        <div className="lottie-feature-content">
+          <h2>Plongez au cœur de vos données</h2>
+          <p>
+            Obtenez une vue d'ensemble claire sur l'avancement de votre équipe. 
+            Analysez la vélocité de vos sprints, collaborez sur des données structurées, et prenez des décisions éclairées beaucoup plus rapidement.
+          </p>
+        </div>
+        <div className="lottie-feature-animation">
+          <DotLottieReact
+            src="https://lottie.host/30d2e96d-f3b2-4509-85ff-38211308b368/48dZduzoLz.lottie"
+            loop
+            autoplay
+          />
+        </div>
+      </section>
+
       {/* Features Section */}
       <section id="features" className="features-section">
         <h2 className="section-title">Tout ce dont vous avez besoin</h2>
@@ -140,8 +196,58 @@ export function LandingPage({ onLoginClick }: LandingPageProps) {
         </div>
       </section>
 
+      {/* Pricing Section */}
+      <section id="pricing" className="pricing-section">
+        <h2 className="section-title">Des tarifs simples et transparents</h2>
+        <p className="section-subtitle">Commencez gratuitement, passez à la vitesse supérieure quand vous êtes prêt.</p>
+        
+        <div className="pricing-grid">
+          {/* Free */}
+          <div className="pricing-card">
+            <h3>Gratuit</h3>
+            <div className="price"><span>0 FCFA</span> /mois</div>
+            <p className="pricing-desc">Pour les individus et petites équipes qui débutent.</p>
+            <ul className="pricing-features">
+              <li><span className="material-symbols-outlined">check</span> Jusqu'à 3 projets libres</li>
+              <li><span className="material-symbols-outlined">check</span> Tâches individuelles illimitées</li>
+              <li><span className="material-symbols-outlined">check</span> Collaboration basique</li>
+            </ul>
+            <button className="btn-outline w-full" onClick={onLoginClick}>Commencer Gratuitement</button>
+          </div>
+
+          {/* Pro */}
+          <div className="pricing-card popular">
+            <div className="popular-badge">Recommandé</div>
+            <h3>Pro</h3>
+            <div className="price"><span>5 000 FCFA</span> /mois</div>
+            <p className="pricing-desc">Pour les équipes qui veulent maximiser leur agilité avec l'IA.</p>
+            <ul className="pricing-features">
+              <li><span className="material-symbols-outlined">check</span> Projets illimités</li>
+              <li><span className="material-symbols-outlined">check</span> Scrum Master IA (Analyse)</li>
+              <li><span className="material-symbols-outlined">check</span> Tâches par commandes vocales</li>
+              <li><span className="material-symbols-outlined">check</span> Tableaux de bord avancés</li>
+            </ul>
+            <button className="btn-glow w-full" style={{ justifyContent: 'center' }} onClick={onLoginClick}>Essayer Pro gratuitement</button>
+          </div>
+
+          {/* Enterprise */}
+          <div className="pricing-card">
+            <h3>Enterprise</h3>
+            <div className="price"><span>Sur mesure</span></div>
+            <p className="pricing-desc">Pour les grandes organisations gérant plusieurs portefeuilles.</p>
+            <ul className="pricing-features">
+              <li><span className="material-symbols-outlined">check</span> Tout du plan Pro</li>
+              <li><span className="material-symbols-outlined">check</span> Hébergement dédié ou sur site</li>
+              <li><span className="material-symbols-outlined">check</span> Sécurité et conformité SSO</li>
+              <li><span className="material-symbols-outlined">check</span> Support prioritaire 24/7</li>
+            </ul>
+            <button className="btn-outline w-full" onClick={onLoginClick}>Contacter les ventes</button>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
-      <section id="cta" className="cta-section">
+      <section className="cta-section">
         <div className="cta-card">
           <div className="cta-glow"></div>
           <h2>Prêt à transformer votre façon de travailler ?</h2>

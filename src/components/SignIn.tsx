@@ -18,8 +18,17 @@ export function SignIn({ onToggleMode }: { onToggleMode: () => void }) {
     };
 
     const handleGoogleSignIn = async () => {
-        const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
-        if (error) setError(error.message);
+        try {
+            const { error } = await supabase.auth.signInWithOAuth({ 
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.origin
+                }
+            });
+            if (error) setError(error.message);
+        } catch (err: any) {
+            setError(err.message || 'Failed to initialize Google Sign-In');
+        }
     };
 
     return (
