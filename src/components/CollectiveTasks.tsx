@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, Fragment } from 'react';
 import { supabase } from '../lib/supabase';
 import './CollectiveTasks.css';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
@@ -167,29 +167,39 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
                         <h2 className="section-title">Fil d'Activité</h2>
                         <span className="section-badge">En Direct</span>
                     </div>
-                    <div className="feed-list">
-                        {feed.length === 0 && !loading && (
-                            <p style={{ opacity: 0.5, fontSize: '0.875rem' }}>Aucune activité récente.</p>
-                        )}
-                        {feed.map((act, i) => (
-                            <div key={act.id} className={`feed-item ${i === 0 ? 'highlight' : ''}`}>
-                                <img src={act.profils?.avatar_url || "https://ui-avatars.com/api/?name=" + (act.profils?.nom || 'Utilisateur')} alt="Avatar" className="feed-avatar" />
-                                <div className="feed-content">
-                                    <div className="feed-header">
-                                        <p className="feed-text"><span className="feed-user">{act.profils?.nom || 'Anonyme'}</span> a créé une tâche collective</p>
-                                        <span className="feed-time">
-                                            {new Date(act.cree_le).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </span>
-                                    </div>
-                                    <p className="feed-subtext">{act.taches?.titre || 'Une tâche'}</p>
-                                    <div className="feed-action">
-                                        <span className="material-symbols-outlined" style={{ fontSize: '0.875rem', color: '#4ade80' }}>check_circle</span>
-                                        <span style={{ fontSize: '0.625rem', color: '#cbd5e1' }}>Vérifié</span>
-                                    </div>
-                                </div>
+                    {feed.length === 0 && !loading ? (
+                        <p style={{ opacity: 0.5, fontSize: '0.875rem', padding: '0 0.5rem' }}>Aucune activité récente.</p>
+                    ) : feed.length > 0 && (
+                        <div className="feed-carousel-wrapper">
+                            <div 
+                                className={`feed-carousel-track ${feed.length > 1 ? 'animate' : ''}`}
+                                style={feed.length > 1 ? { animationDuration: `${feed.length * 7}s` } : {}}
+                            >
+                                {(feed.length > 1 ? [1, 2] : [1]).map((multi) => (
+                                    <Fragment key={multi}>
+                                        {feed.map((act, i) => (
+                                            <div key={`${multi}-${act.id}`} className={`feed-item ${i === 0 && multi === 1 ? 'highlight' : ''}`}>
+                                                <img src={act.profils?.avatar_url || "https://ui-avatars.com/api/?name=" + (act.profils?.nom || 'Utilisateur')} alt="Avatar" className="feed-avatar" />
+                                                <div className="feed-content">
+                                                    <div className="feed-header">
+                                                        <p className="feed-text"><span className="feed-user">{act.profils?.nom || 'Anonyme'}</span> a créé une tâche collective</p>
+                                                        <span className="feed-time">
+                                                            {new Date(act.cree_le).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        </span>
+                                                    </div>
+                                                    <p className="feed-subtext">{act.taches?.titre || 'Une tâche'}</p>
+                                                    <div className="feed-action">
+                                                        <span className="material-symbols-outlined" style={{ fontSize: '0.875rem', color: '#4ade80' }}>check_circle</span>
+                                                        <span style={{ fontSize: '0.625rem', color: '#cbd5e1' }}>Vérifié</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </Fragment>
+                                ))}
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    )}
                 </section>
 
                 {/* Active Group Tasks */}

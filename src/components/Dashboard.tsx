@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import confetti from 'canvas-confetti';
 import './Dashboard.css';
@@ -10,6 +10,53 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
     const [loading, setLoading] = useState(true);
     const [totalXP, setTotalXP] = useState<number>(0);
     const [weeklyStats, setWeeklyStats] = useState<{ dayName: string, count: number, isToday: boolean }[]>([]);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const [isDragging, setIsDragging] = useState(false);
+
+    useEffect(() => {
+        if (!isDragging) return;
+
+        let scrollSpeed = 0;
+        let animationFrameId: number;
+
+        const handleMove = (e: MouseEvent | TouchEvent) => {
+            const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
+            const threshold = 85; 
+            const maxSpeed = 15; 
+            
+            const container = scrollContainerRef.current;
+            if (!container) return;
+
+            const rect = container.getBoundingClientRect();
+            
+            if (rect.right - clientX < threshold && clientX < rect.right + 50) {
+                const intensity = 1 - Math.max(0, rect.right - clientX) / threshold;
+                scrollSpeed = maxSpeed * intensity;
+            } else if (clientX - rect.left < threshold && clientX > rect.left - 50) {
+                const intensity = 1 - Math.max(0, clientX - rect.left) / threshold;
+                scrollSpeed = -maxSpeed * intensity;
+            } else {
+                scrollSpeed = 0;
+            }
+        };
+
+        const performScroll = () => {
+            if (scrollSpeed !== 0 && scrollContainerRef.current) {
+                scrollContainerRef.current.scrollLeft += scrollSpeed;
+            }
+            animationFrameId = requestAnimationFrame(performScroll);
+        };
+
+        window.addEventListener('mousemove', handleMove, { capture: true });
+        window.addEventListener('touchmove', handleMove, { passive: true, capture: true });
+        animationFrameId = requestAnimationFrame(performScroll);
+
+        return () => {
+            window.removeEventListener('mousemove', handleMove, { capture: true });
+            window.removeEventListener('touchmove', handleMove, { capture: true });
+            cancelAnimationFrame(animationFrameId);
+        };
+    }, [isDragging]);
 
     useEffect(() => {
         fetchAdvice();
@@ -335,8 +382,11 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
                             </button>
                         </div>
                     ) : (
-                        <DragDropContext onDragEnd={onDragEnd}>
-                            <div className="kanban-columns-wrapper">
+                        <DragDropContext 
+                            onDragStart={() => setIsDragging(true)}
+                            onDragEnd={(result) => { setIsDragging(false); onDragEnd(result); }}
+                        >
+                            <div className="kanban-columns-wrapper" ref={scrollContainerRef}>
                                 {Object.entries(columns).map(([columnId, column]) => (
                                     <div key={columnId} className="kanban-column-container">
                                         <div className="kanban-column-header">
