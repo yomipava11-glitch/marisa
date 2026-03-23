@@ -11,6 +11,7 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
     const [loading, setLoading] = useState(true);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [activeFeedIndex, setActiveFeedIndex] = useState(0);
 
     useEffect(() => {
         fetchCollectiveTasks();
@@ -124,6 +125,19 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
         return { percent, state: 'normal' };
     };
 
+    const handleFeedScroll = (e: React.UIEvent<HTMLDivElement>) => {
+        const container = e.currentTarget;
+        const scrollLeft = container.scrollLeft;
+        
+        const itemWidth = container.children[0]?.clientWidth || 0;
+        const gap = 16; // 1rem
+        
+        if (itemWidth > 0) {
+            const index = Math.round(scrollLeft / (itemWidth + gap));
+            setActiveFeedIndex(Math.min(feed.length - 1, Math.max(0, index)));
+        }
+    };
+
     return (
         <div className="collective-container">
             {/* Header */}
@@ -170,34 +184,39 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
                     {feed.length === 0 && !loading ? (
                         <p style={{ opacity: 0.5, fontSize: '0.875rem', padding: '0 0.5rem' }}>Aucune activité récente.</p>
                     ) : feed.length > 0 && (
-                        <div className="feed-carousel-wrapper">
-                            <div 
-                                className={`feed-carousel-track ${feed.length > 1 ? 'animate' : ''}`}
-                                style={feed.length > 1 ? { animationDuration: `${feed.length * 7}s` } : {}}
-                            >
-                                {(feed.length > 1 ? [1, 2] : [1]).map((multi) => (
-                                    <Fragment key={multi}>
-                                        {feed.map((act, i) => (
-                                            <div key={`${multi}-${act.id}`} className={`feed-item ${i === 0 && multi === 1 ? 'highlight' : ''}`}>
-                                                <img src={act.profils?.avatar_url || "https://ui-avatars.com/api/?name=" + (act.profils?.nom || 'Utilisateur')} alt="Avatar" className="feed-avatar" />
-                                                <div className="feed-content">
-                                                    <div className="feed-header">
-                                                        <p className="feed-text"><span className="feed-user">{act.profils?.nom || 'Anonyme'}</span> a créé une tâche collective</p>
-                                                        <span className="feed-time">
-                                                            {new Date(act.cree_le).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                        </span>
-                                                    </div>
-                                                    <p className="feed-subtext">{act.taches?.titre || 'Une tâche'}</p>
-                                                    <div className="feed-action">
-                                                        <span className="material-symbols-outlined" style={{ fontSize: '0.875rem', color: '#4ade80' }}>check_circle</span>
-                                                        <span style={{ fontSize: '0.625rem', color: '#cbd5e1' }}>Vérifié</span>
-                                                    </div>
-                                                </div>
+                        <div className="snap-carousel-container">
+                            <div className="snap-carousel-track" onScroll={handleFeedScroll}>
+                                {feed.map((act, i) => (
+                                    <div key={act.id} className={`feed-item snap-carousel-item ${i === 0 ? 'highlight' : ''}`}>
+                                        <img src={act.profils?.avatar_url || "https://ui-avatars.com/api/?name=" + (act.profils?.nom || 'Utilisateur')} alt="Avatar" className="feed-avatar" />
+                                        <div className="feed-content">
+                                            <div className="feed-header">
+                                                <p className="feed-text"><span className="feed-user">{act.profils?.nom || 'Anonyme'}</span> a créé une tâche collective</p>
+                                                <span className="feed-time">
+                                                    {new Date(act.cree_le).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </span>
                                             </div>
-                                        ))}
-                                    </Fragment>
+                                            <p className="feed-subtext">{act.taches?.titre || 'Une tâche'}</p>
+                                            <div className="feed-action">
+                                                <span className="material-symbols-outlined" style={{ fontSize: '0.875rem', color: '#4ade80' }}>check_circle</span>
+                                                <span style={{ fontSize: '0.625rem', color: '#cbd5e1' }}>Vérifié</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 ))}
                             </div>
+                            
+                            {feed.length > 1 && (
+                                <div className="snap-carousel-dots">
+                                    {feed.map((_, i) => (
+                                        <button 
+                                            key={i} 
+                                            className={`snap-dot ${i === activeFeedIndex ? 'active' : ''}`}
+                                            aria-label={`Slide ${i + 1}`}
+                                        />
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     )}
                 </section>

@@ -118,40 +118,56 @@
     letter-spacing: 0.1em;
 }
 
-.feed-carousel-wrapper {
-    overflow: hidden;
-    white-space: nowrap;
-    position: relative;
+.snap-carousel-container {
     width: calc(100% + 2rem);
     margin: 0 -1rem;
-    mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.snap-carousel-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    width: 100%;
+    gap: 1rem;
+    padding: 0 1rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.snap-carousel-track::-webkit-scrollbar {
+    display: none;
+}
+
+.snap-carousel-track::after {
+    content: '';
+    flex: 0 0 1px;
+}
+
+.snap-carousel-dots {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
     padding-bottom: 0.5rem;
 }
 
-.feed-carousel-track {
-    display: inline-flex;
-    gap: 1rem;
-    padding: 0 1rem;
-    width: max-content;
+.snap-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.feed-carousel-track.animate {
-    animation: scroll-carousel 20s linear infinite;
-}
-
-.feed-carousel-wrapper:hover .feed-carousel-track.animate,
-.feed-carousel-wrapper:active .feed-carousel-track.animate {
-    animation-play-state: paused;
-}
-
-@keyframes scroll-carousel {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(calc(-50% - 0.5rem));
-    }
+.snap-dot.active {
+    background: var(--color-primary);
+    transform: scale(1.3);
 }
 
 .feed-item {
@@ -167,8 +183,9 @@
     position: relative;
     overflow: hidden;
     min-width: 220px;
-    max-width: 250px;
-    flex-shrink: 0;
+    max-width: 320px;
+    flex: 0 0 85%;
+    scroll-snap-align: center;
     white-space: normal;
 }
 
