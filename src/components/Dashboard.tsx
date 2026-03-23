@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import confetti from 'canvas-confetti';
 import './Dashboard.css';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-
+import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
 export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOut: () => void, onNavigate: (page: string, data?: any) => void }) {
     const [advice, setAdvice] = useState<string>("Chargement de vos conseils productivité...");
     const [tasks, setTasks] = useState<any[]>([]);
@@ -92,6 +92,10 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
 
     const toggleTaskStatus = async (task: any) => {
         const newStatus = task.statut === 'terminee' ? 'en_cours' : 'terminee';
+        
+        // Optimistic update
+        setTasks(prev => prev.map(t => t.id === task.id ? { ...t, statut: newStatus } : t));
+
         await supabase.from('taches').update({ statut: newStatus }).eq('id', task.id);
 
         if (newStatus === 'terminee') {
@@ -115,7 +119,44 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
                 .eq('action', 'Terminer');
         }
 
-        fetchTasks();
+        fetchStats();
+    };
+
+    const onDragEnd = async (result: DropResult) => {
+        if (!result.destination) return;
+        const { source, destination, draggableId } = result;
+
+        if (source.droppableId === destination.droppableId) return;
+
+        const newStatus = destination.droppableId;
+        const oldStatus = source.droppableId;
+
+        // Optimistic update
+        setTasks(prev => prev.map(t => t.id === draggableId ? { ...t, statut: newStatus } : t));
+
+        // DB update
+        await supabase.from('taches').update({ statut: newStatus }).eq('id', draggableId);
+
+        if (newStatus === 'terminee') {
+            await supabase.from('flux_activite').insert({
+                tache_id: draggableId,
+                utilisateur_id: user.id,
+                action: 'Terminer',
+                details: {}
+            });
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#a855f7', '#00a651', '#3b82f6', '#f59e0b']
+            });
+        } else if (oldStatus === 'terminee') {
+            await supabase.from('flux_activite')
+                .delete()
+                .eq('tache_id', draggableId)
+                .eq('utilisateur_id', user.id)
+                .eq('action', 'Terminer');
+        }
         fetchStats();
     };
 
@@ -142,6 +183,21 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
     const urgentTasks = tasks.filter(t => t.statut !== 'terminee' && t.date_debut && t.date_echeance && getTimeStatus(t.date_debut, t.date_echeance).state === 'urgent').length;
     const overdueTasks = tasks.filter(t => t.statut !== 'terminee' && t.date_debut && t.date_echeance && getTimeStatus(t.date_debut, t.date_echeance).state === 'overdue').length;
 
+    const columns = {
+        en_attente: {
+            title: 'À faire',
+            tasks: tasks.filter(t => !t.statut || t.statut === 'en_attente')
+        },
+        en_cours: {
+            title: 'En cours',
+            tasks: tasks.filter(t => t.statut === 'en_cours')
+        },
+        terminee: {
+            title: 'Terminée',
+            tasks: tasks.filter(t => t.statut === 'terminee')
+        }
+    };
+
     return (
         <div className="dashboard-container">
             <div className="dashboard-fixed-top">
@@ -154,8 +210,8 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
                             className="avatar"
                         />
                         <div>
-                            <h2 className="greeting-title">Hello, {user.user_metadata?.full_name || 'User'}!</h2>
-                            <p className="greeting-subtitle">Focus Mode On</p>
+                            <h2 className="greeting-title">Bonjour, {user.user_metadata?.full_name || 'Utilisateur'} !</h2>
+                            <p className="greeting-subtitle">Mode Concentration</p>
                         </div>
                     </div>
                     <div className="header-actions">
@@ -189,7 +245,7 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
                         <div className="level-header">
                             <div className="level-info">
                                 <p>Niveau Actuel</p>
-                                <h2>Level {currentLevel}</h2>
+                                <h2>Niveau {currentLevel}</h2>
                             </div>
                             <div className="xp-badge">
                                 {totalXP} XP Total
@@ -229,20 +285,20 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
                     <div className="ai-blur-blob"></div>
                     <div className="ai-advice-header">
                         <span className="material-symbols-outlined ai-icon">auto_awesome</span>
-                        <span className="ai-label">Daily AI Advice</span>
+                        <span className="ai-label">Conseil IA du Jour</span>
                     </div>
                     <p className="ai-content">"{advice}"</p>
                 </div>
 
-                {/* Tasks List */}
+                {/* Kanban Board */}
                 <div className="tasks-header">
-                    <h2 className="tasks-title">My Tasks</h2>
-                    <button className="view-all">View All</button>
+                    <h2 className="tasks-title">Mes Tâches</h2>
+                    <button className="view-all" onClick={() => fetchTasks()}>Actualiser</button>
                 </div>
 
-                <div className="tasks-list">
+                <div className="kanban-board-container">
                     {loading ? (
-                        <p style={{ textAlign: 'center', opacity: 0.5 }}>Loading tasks...</p>
+                        <p style={{ textAlign: 'center', opacity: 0.5, width: '100%' }}>Chargement des tâches...</p>
                     ) : tasks.length === 0 ? (
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1rem', width: '100%', minHeight: '50vh' }}>
                             <div style={{ width: '100%', maxWidth: '350px', aspectRatio: '1/1', opacity: 0.9 }}>
@@ -273,67 +329,97 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
                                     cursor: 'pointer',
                                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                                 }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = 'scale(1.05) translateY(-2px)';
-                                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 166, 81, 0.6)';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = 'scale(1) translateY(0)';
-                                    e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 166, 81, 0.4)';
-                                }}
                             >
                                 <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>add</span>
                                 Nouvelle tâche
                             </button>
                         </div>
                     ) : (
-                        tasks.map(task => {
-                            const timeStatus = (task.date_debut && task.date_echeance) ? getTimeStatus(task.date_debut, task.date_echeance) : { percent: 0, state: 'normal' };
-                            const isCompleted = task.statut === 'terminee';
-
-                            return (
-                                <div key={task.id} className="task-item" style={{ cursor: 'pointer' }} onClick={() => onNavigate('taskDetails', task)}>
-                                    <div
-                                        className={`task-checkbox ${isCompleted ? 'checked' : ''}`}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            toggleTaskStatus(task);
-                                        }}
-                                    >
-                                        {isCompleted && <span className="material-symbols-outlined" style={{ fontSize: '1.2rem' }}>check</span>}
-                                    </div>
-                                    <div className="task-details">
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <h3 className={`task-title ${isCompleted ? 'completed' : ''}`}>
-                                                {task.titre}
-                                            </h3>
-                                            {!isCompleted && timeStatus.state === 'overdue' && (
-                                                <span className="status-badge error">Retard</span>
-                                            )}
-                                            {!isCompleted && timeStatus.state === 'urgent' && (
-                                                <span className="status-badge warning">Urgente</span>
-                                            )}
+                        <DragDropContext onDragEnd={onDragEnd}>
+                            <div className="kanban-columns-wrapper">
+                                {Object.entries(columns).map(([columnId, column]) => (
+                                    <div key={columnId} className="kanban-column-container">
+                                        <div className="kanban-column-header">
+                                            <h3>{column.title}</h3>
+                                            <span className="kanban-column-count">{column.tasks.length}</span>
                                         </div>
-                                        <div className="task-meta">
-                                            {task.date_echeance && (
-                                                <span className="task-chip">
-                                                    {new Date(task.date_echeance).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                </span>
-                                            )}
-                                        </div>
-                                        {task.date_debut && task.date_echeance && !isCompleted && (
-                                            <div className="task-time-progress-bg">
+                                        <Droppable droppableId={columnId}>
+                                            {(provided, snapshot) => (
                                                 <div
-                                                    className={`task-time-progress-fill ${timeStatus.state}`}
-                                                    style={{ width: `${timeStatus.percent}%` }}
-                                                ></div>
-                                            </div>
-                                        )}
+                                                    className={`kanban-column ${snapshot.isDraggingOver ? 'dragging-over' : ''}`}
+                                                    ref={provided.innerRef}
+                                                    {...provided.droppableProps}
+                                                >
+                                                    {column.tasks.map((task, index) => {
+                                                        const timeStatus = (task.date_debut && task.date_echeance) ? getTimeStatus(task.date_debut, task.date_echeance) : { percent: 0, state: 'normal' };
+                                                        const isCompleted = columnId === 'terminee';
+
+                                                        return (
+                                                            <Draggable key={task.id} draggableId={task.id} index={index}>
+                                                                {(provided, snapshot) => (
+                                                                    <div
+                                                                        className={`task-item kanban-task-item ${snapshot.isDragging ? 'is-dragging' : ''}`}
+                                                                        ref={provided.innerRef}
+                                                                        {...provided.draggableProps}
+                                                                        {...provided.dragHandleProps}
+                                                                        onClick={() => onNavigate('taskDetails', task)}
+                                                                        style={{ 
+                                                                            ...provided.draggableProps.style,
+                                                                        }}
+                                                                    >
+                                                                        <div
+                                                                            className={`task-checkbox ${isCompleted ? 'checked' : ''}`}
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                toggleTaskStatus(task);
+                                                                            }}
+                                                                        >
+                                                                            {isCompleted && <span className="material-symbols-outlined" style={{ fontSize: '1.2rem' }}>check</span>}
+                                                                        </div>
+                                                                        <div className="task-details">
+                                                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                                                <h3 className={`task-title ${isCompleted ? 'completed' : ''}`}>
+                                                                                    {task.titre}
+                                                                                </h3>
+                                                                            </div>
+                                                                            <div className="task-meta" style={{ marginTop: '0.5rem' }}>
+                                                                                {task.date_echeance && (
+                                                                                    <span className="task-chip">
+                                                                                        {new Date(task.date_echeance).toLocaleDateString()} {new Date(task.date_echeance).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                                    </span>
+                                                                                )}
+                                                                                {!isCompleted && timeStatus.state === 'overdue' && (
+                                                                                    <span className="status-badge error">Retard</span>
+                                                                                )}
+                                                                                {!isCompleted && timeStatus.state === 'urgent' && (
+                                                                                    <span className="status-badge warning">Urgente</span>
+                                                                                )}
+                                                                                {task.est_important && (
+                                                                                    <span className="task-chip priority">Important</span>
+                                                                                )}
+                                                                            </div>
+                                                                            {task.date_debut && task.date_echeance && !isCompleted && (
+                                                                                <div className="task-time-progress-bg">
+                                                                                    <div
+                                                                                        className={`task-time-progress-fill ${timeStatus.state}`}
+                                                                                        style={{ width: `${timeStatus.percent}%` }}
+                                                                                    ></div>
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </Draggable>
+                                                        );
+                                                    })}
+                                                    {provided.placeholder}
+                                                </div>
+                                            )}
+                                        </Droppable>
                                     </div>
-                                    <span className="material-symbols-outlined" style={{ color: '#64748b' }}>more_vert</span>
-                                </div>
-                            )
-                        })
+                                ))}
+                            </div>
+                        </DragDropContext>
                     )}
                 </div>
             </div>{/* end dashboard-scroll */}
@@ -352,7 +438,7 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
                     </button>
                     <button className="nav-item" onClick={() => onNavigate('collective')}>
                         <span className="material-symbols-outlined">group</span>
-                        <span className="nav-label">Collective</span>
+                        <span className="nav-label">Collectif</span>
                     </button>
                     <button className="nav-item" onClick={() => onNavigate('ai-assistant')}>
                         <span className="material-symbols-outlined">robot_2</span>
@@ -360,7 +446,7 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
                     </button>
                     <button className="nav-item" onClick={() => onNavigate('profile')}>
                         <span className="material-symbols-outlined">account_circle</span>
-                        <span className="nav-label">Profile</span>
+                        <span className="nav-label">Profil</span>
                     </button>
                 </div>
             </div>

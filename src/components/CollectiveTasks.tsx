@@ -131,7 +131,7 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
                 <button className="icon-button" onClick={() => onNavigate('back')}>
                     <span className="material-symbols-outlined">arrow_back</span>
                 </button>
-                <h1 className="collective-title">Collective Tasks</h1>
+                <h1 className="collective-title">Tâches Collectives</h1>
                 <button className="icon-button" style={{ position: 'relative' }} onClick={() => onNavigate('invitations')}>
                     <span className="material-symbols-outlined">mail</span>
                     {pendingInvitesCount > 0 && (
@@ -153,38 +153,38 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
                 {/* Filters */}
                 <div className="filter-section">
                     <button className="filter-pill active">
-                        <span>My Groups</span>
+                        <span>Mes Groupes</span>
                         <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>expand_more</span>
                     </button>
                     <button className="filter-pill inactive">
-                        <span>All Tasks</span>
+                        <span>Toutes les Tâches</span>
                     </button>
                 </div>
 
                 {/* Social Feed */}
                 <section>
                     <div className="section-header">
-                        <h2 className="section-title">Social Activity Feed</h2>
-                        <span className="section-badge">Live Now</span>
+                        <h2 className="section-title">Fil d'Activité</h2>
+                        <span className="section-badge">En Direct</span>
                     </div>
                     <div className="feed-list">
                         {feed.length === 0 && !loading && (
-                            <p style={{ opacity: 0.5, fontSize: '0.875rem' }}>No recent activity.</p>
+                            <p style={{ opacity: 0.5, fontSize: '0.875rem' }}>Aucune activité récente.</p>
                         )}
                         {feed.map((act, i) => (
                             <div key={act.id} className={`feed-item ${i === 0 ? 'highlight' : ''}`}>
-                                <img src={act.profils?.avatar_url || "https://ui-avatars.com/api/?name=" + (act.profils?.nom || 'User')} alt="Avatar" className="feed-avatar" />
+                                <img src={act.profils?.avatar_url || "https://ui-avatars.com/api/?name=" + (act.profils?.nom || 'Utilisateur')} alt="Avatar" className="feed-avatar" />
                                 <div className="feed-content">
                                     <div className="feed-header">
-                                        <p className="feed-text"><span className="feed-user">{act.profils?.nom || 'Anonymous'}</span> a créé tâche collective</p>
+                                        <p className="feed-text"><span className="feed-user">{act.profils?.nom || 'Anonyme'}</span> a créé une tâche collective</p>
                                         <span className="feed-time">
                                             {new Date(act.cree_le).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </span>
                                     </div>
-                                    <p className="feed-subtext">{act.taches?.titre || 'A task'}</p>
+                                    <p className="feed-subtext">{act.taches?.titre || 'Une tâche'}</p>
                                     <div className="feed-action">
                                         <span className="material-symbols-outlined" style={{ fontSize: '0.875rem', color: '#4ade80' }}>check_circle</span>
-                                        <span style={{ fontSize: '0.625rem', color: '#cbd5e1' }}>Verified</span>
+                                        <span style={{ fontSize: '0.625rem', color: '#cbd5e1' }}>Vérifié</span>
                                     </div>
                                 </div>
                             </div>
@@ -195,7 +195,7 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
                 {/* Active Group Tasks */}
                 <section>
                     <div className="section-header">
-                        <h2 className="section-title">Active Group Tasks</h2>
+                        <h2 className="section-title">Tâches de Groupe Actives</h2>
                         <button className="icon-button" onClick={() => setIsSearchOpen(!isSearchOpen)} style={{ background: isSearchOpen ? 'rgba(0, 166, 81, 0.2)' : 'transparent', color: isSearchOpen ? '#34d399' : '#f8fafc', transition: 'all 0.3s' }}>
                             <span className="material-symbols-outlined">search</span>
                         </button>
@@ -364,7 +364,7 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
                     </button>
                     <button className="nav-item active">
                         <span className="material-symbols-outlined">group</span>
-                        <span className="nav-label">Collective</span>
+                        <span className="nav-label">Collectif</span>
                     </button>
                     <button className="nav-item" onClick={() => onNavigate('ai-assistant')}>
                         <span className="material-symbols-outlined">robot_2</span>
@@ -372,7 +372,7 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
                     </button>
                     <button className="nav-item" onClick={() => onNavigate('profile')}>
                         <span className="material-symbols-outlined">account_circle</span>
-                        <span className="nav-label">Profile</span>
+                        <span className="nav-label">Profil</span>
                     </button>
                 </div>
             </div>

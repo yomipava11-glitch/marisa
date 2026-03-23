@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 
 interface Invitation {
@@ -140,9 +141,12 @@ export const Invitations: React.FC<{ onNavigate: (page: string) => void }> = ({ 
 
                     {invitations.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 text-center space-y-6">
-                            <div className="h-48 w-48 rounded-full flex items-center justify-center relative overflow-hidden" style={{ background: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                                <div className="absolute inset-0 bg-[#00a651]/10 animate-pulse"></div>
-                                <span className="material-symbols-outlined text-7xl text-[#00a651]/60">mark_email_read</span>
+                            <div style={{ width: '100%', maxWidth: '280px', aspectRatio: '1/1', opacity: 0.9 }}>
+                                <DotLottieReact
+                                    src="https://lottie.host/1e2d386d-edf9-4322-b71a-79774f0e53ea/HTYpE8sWUn.lottie"
+                                    loop
+                                    autoplay
+                                />
                             </div>
                             <div className="space-y-2">
                                 <h3 className="text-2xl font-bold text-white">Tout est à jour !</h3>

@@ -274,11 +274,11 @@ export function Profile({ user, onSignOut, onNavigate }: ProfileProps) {
                     </button>
                     <button className="nav-item" onClick={() => onNavigate('collective')}>
                         <span className="material-symbols-outlined">group</span>
-                        <span className="nav-label">Collective</span>
+                        <span className="nav-label">Collectif</span>
                     </button>
                     <button className="nav-item active">
                         <span className="material-symbols-outlined fill-[1]">account_circle</span>
-                        <span className="nav-label">Profile</span>
+                        <span className="nav-label">Profil</span>
                     </button>
                 </div>
             </div>
