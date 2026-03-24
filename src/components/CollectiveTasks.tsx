@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, Fragment } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import './CollectiveTasks.css';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
