@@ -12,6 +12,7 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [activeFeedIndex, setActiveFeedIndex] = useState(0);
+    const [seenTasks, setSeenTasks] = useState<Set<string>>(new Set());
 
     useEffect(() => {
         fetchCollectiveTasks();
@@ -59,7 +60,7 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
 
         const { data } = await supabase
             .from('taches')
-            .select('*, est_important, membres_tache(utilisateur_id, role, statut, profils(nom, avatar_url)), sous_taches(id, statut)')
+            .select('*, est_important, membres_tache(utilisateur_id, role, statut, vu, profils(nom, avatar_url)), sous_taches(id, statut)')
             .eq('est_collectif', true)
             .neq('statut', 'supprimee')
             .or(orClause);
@@ -301,13 +302,32 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
                             const doneSub = task.sous_taches?.filter((s: any) => s.statut === 'terminee').length || 0;
                             const subProgress = totalSub > 0 ? Math.round((doneSub / totalSub) * 100) : 0;
 
+                            // Check if this task is "new" (unseen) for the current user
+                            const memberEntry = task.membres_tache?.find((m: any) => m.utilisateur_id === user.id);
+                            const isNewTask = memberEntry?.vu === false && !seenTasks.has(task.id);
+
+                            const handleTaskClick = () => {
+                                if (isNewTask) {
+                                    // Fire-and-forget: mark as seen
+                                    setSeenTasks(prev => new Set(prev).add(task.id));
+                                    supabase
+                                        .from('membres_tache')
+                                        .update({ vu: true })
+                                        .eq('tache_id', task.id)
+                                        .eq('utilisateur_id', user.id)
+                                        .then();
+                                }
+                                onNavigate('taskDetails', task);
+                            };
+
                             return (
                                 <div
                                     key={task.id}
-                                    className={`group-task-card ${isCompleted ? 'completed' : ''}`}
-                                    onClick={() => onNavigate('taskDetails', task)}
+                                    className={`group-task-card ${isCompleted ? 'completed' : ''} ${isNewTask ? 'new-task' : ''}`}
+                                    onClick={handleTaskClick}
                                     style={{ cursor: 'pointer' }}
                                 >
+                                    {isNewTask && <span className="new-task-badge">Nouveau</span>}
                                     <div className="task-card-header">
                                         <div className="task-icon-box">
                                             {task.icone_url ? (
