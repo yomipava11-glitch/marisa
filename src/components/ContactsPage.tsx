@@ -147,7 +147,14 @@ export function ContactsPage({ user, onNavigate }: ContactsPageProps) {
                         <span className="material-symbols-outlined">arrow_back</span>
                     </button>
                     <h1 className="contacts-page-title">Mes Contacts</h1>
-                    <div style={{ width: '2.5rem' }}></div>
+                    <button
+                        className="contacts-icon-btn"
+                        onClick={() => onNavigate('leaderboard')}
+                        title="Classement"
+                        style={{ background: 'rgba(245, 158, 11, 0.15)', borderColor: 'rgba(245, 158, 11, 0.3)', color: '#f59e0b' }}
+                    >
+                        <span className="material-symbols-outlined">emoji_events</span>
+                    </button>
                 </header>
 
                 {/* Add Contact Form */}

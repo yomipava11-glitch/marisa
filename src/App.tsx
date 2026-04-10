@@ -12,6 +12,7 @@ import { AiAssistant } from './components/AiAssistant';
 import { Notifications } from './components/Notifications';
 import { LandingPage } from './components/LandingPage';
 import { ContactsPage } from './components/ContactsPage';
+import { ContactsLeaderboard } from './components/ContactsLeaderboard';
 
 type NavEntry = { page: string; data?: any };
 
@@ -125,6 +126,9 @@ function App() {
       )}
       {currentPage === 'contacts' && (
         <ContactsPage user={session.user} onNavigate={handleNavigate} />
+      )}
+      {currentPage === 'leaderboard' && (
+        <ContactsLeaderboard user={session.user} onNavigate={handleNavigate} />
       )}
     </>
   );

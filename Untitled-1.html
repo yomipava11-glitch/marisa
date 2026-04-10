@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gusto Express - Invoice Details</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "background": "#f8f6f6",
+              "surface-container-low": "#f8f6f6",
+              "surface-container-high": "#ebe7e7",
+              "on-background": "#1e1b1b",
+              "on-primary-container": "#410001",
+              "on-secondary": "#ffffff",
+              "surface-dim": "#f8f6f6",
+              "secondary-fixed-dim": "#98d5c0",
+              "on-tertiary-container": "#1d1a1e",
+              "on-secondary-fixed-variant": "#005139",
+              "inverse-primary": "#ffb4a9",
+              "tertiary-fixed": "#e6e1e7",
+              "inverse-surface": "#332f2f",
+              "surface-variant": "#f4dddb",
+              "surface-bright": "#ffffff",
+              "error-container": "#ffdad6",
+              "error": "#ba1a1a",
+              "on-primary": "#ffffff",
+              "primary-container": "#ffdad5",
+              "secondary-fixed": "#b3f1db",
+              "primary-fixed-dim": "#ffb4a9",
+              "surface": "#ffffff",
+              "surface-container": "#f1eeee",
+              "on-secondary-fixed": "#002116",
+              "surface-tint": "#ec1313",
+              "surface-container-highest": "#e5e1e1",
+              "on-surface-variant": "#4d4544",
+              "primary-fixed": "#ffdad5",
+              "secondary-container": "#b3f1db",
+              "on-tertiary": "#ffffff",
+              "on-error-container": "#410002",
+              "on-primary-fixed-variant": "#930004",
+              "outline": "#857371",
+              "tertiary-container": "#e6e1e7",
+              "on-primary-fixed": "#410001",
+              "primary": "#ec1313",
+              "inverse-on-surface": "#f8f0ef",
+              "on-error": "#ffffff",
+              "on-tertiary-fixed": "#1d1a1e",
+              "on-secondary-container": "#002116",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary-fixed-variant": "#48464a",
+              "tertiary-fixed-dim": "#cac5ca",
+              "tertiary": "#605d62",
+              "outline-variant": "#d8c2bf",
+              "on-surface": "#1e1b1b",
+              "secondary": "#10b981"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Plus Jakarta Sans"],
+              "label": ["Plus Jakarta Sans"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md shadow-sm flex items-center justify-between px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<button class="text-slate-500 hover:bg-slate-100 transition-colors active:scale-95 duration-200 p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-['Plus_Jakarta_Sans'] font-bold tracking-tight text-lg text-slate-900">Invoice Details</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-slate-500 hover:bg-slate-100 transition-colors active:scale-95 duration-200 p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+</button>
+<button class="text-slate-500 hover:bg-slate-100 transition-colors active:scale-95 duration-200 p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+</button>
+</div>
+</header>
+<main class="pt-24 px-6 max-w-2xl mx-auto space-y-6">
+<!-- Brand Identity & Hero -->
+<div class="flex justify-between items-start">
+<div class="space-y-1">
+<div class="text-2xl font-extrabold tracking-tighter text-primary">GUSTO EXPRESS</div>
+<div class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest">Premium Delivery Service</div>
+</div>
+<div class="text-right">
+<div class="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold">PAID</div>
+</div>
+</div>
+<!-- Invoice Meta Grid -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface rounded-xl p-4 shadow-sm space-y-1">
+<p class="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Invoice ID</p>
+<p class="font-bold text-on-surface">#GX-2024-88</p>
+</div>
+<div class="bg-surface rounded-xl p-4 shadow-sm space-y-1">
+<p class="text-[10px] uppercase font-bold text-on-surface-variant tracking-wider">Date Issued</p>
+<p class="font-bold text-on-surface">22 May, 2024</p>
+</div>
+</div>
+<!-- Customer Section -->
+<section class="bg-surface rounded-xl p-5 shadow-sm space-y-4">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-sm" data-icon="person_pin_circle">person_pin_circle</span>
+<h2 class="text-sm font-bold uppercase tracking-tight">Customer Details</h2>
+</div>
+<div class="space-y-1">
+<p class="font-bold text-lg">John Doe</p>
+<p class="text-on-surface-variant text-sm leading-relaxed">
+                    742 Evergreen Terrace,<br/>
+                    Springfield
+                </p>
+</div>
+</section>
+<!-- Order Items -->
+<section class="space-y-3">
+<div class="flex items-center justify-between px-1">
+<h2 class="text-sm font-bold uppercase tracking-tight text-on-surface-variant">Order Items</h2>
+<span class="text-xs font-bold text-primary">2 Items</span>
+</div>
+<div class="space-y-3">
+<!-- Item 1 -->
+<div class="bg-surface rounded-xl p-4 shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container overflow-hidden">
+<img alt="Burger" class="w-full h-full object-cover" data-alt="close-up of a gourmet truffle burger with melted cheese and mushrooms on a brioche bun with professional food lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWRGrYBc_8EYBHpfrTVs-zv4joMeVSXRtaBhWiQ8F_UNbfBiplyHpYaA30wfdUI8Julv8w9tpiVDsDsyWWte08Z1P3ZH2lIvnCca3qZH-ZqRbkb4UXOmOz5jnCaIxtysDJZUD-ifN28VOJL9fqqVJnGxsJdC7kUcOzxi4Fnpf9vJpwMHTjZC4rLU2ZxBXkRhJVZyfb0COCTag2a0AJFnsHLfqI_DgG_i8ZtViQSCVaEUvMmB7mermXCWEyoQG__rihWXx7BejgkNdm"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Gourmet Truffle Burger</p>
+<p class="text-xs text-on-surface-variant font-medium">Quantity: 1</p>
+</div>
+</div>
+<p class="font-bold text-on-surface">$14.00</p>
+</div>
+<!-- Item 2 -->
+<div class="bg-surface rounded-xl p-4 shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container overflow-hidden">
+<img alt="Fries" class="w-full h-full object-cover" data-alt="crispy golden french fries sprinkled with truffle zest and herbs in a modern serving dish with warm lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBybQQa3cMpM-FUatBzKw7OemODGlZYPjKf6lwYKJQ2ow73y6QgR0JEZZ95Dod1kxEhf4GiOK0KAYNVBks7WatovqH8RkzlyNBl1WwKwko7i4ysVwPp6IfLligSYqSwkNs74_CvksrcAAUUY3Fs87ksZAQp0Ag1B6C3ev3BA31JXjHlhQ4MXdGxrEI4D9A6eKhAlOt1UE4MDUOyLuN8tMZryRUCNJBl4mGzv4GX7fvfdmFDOVszjaIdcifE8ziIn2I7_YC6Hndy9AF2"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Truffle Fries</p>
+<p class="text-xs text-on-surface-variant font-medium">Quantity: 1</p>
+</div>
+</div>
+<p class="font-bold text-on-surface">$6.00</p>
+</div>
+</div>
+</section>
+<!-- Financial Summary -->
+<section class="bg-surface rounded-xl p-6 shadow-sm space-y-4">
+<div class="space-y-3">
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant font-medium">Subtotal</span>
+<span class="font-bold text-on-surface">$20.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant font-medium">Delivery Fee</span>
+<span class="font-bold text-on-surface">$2.50</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant font-medium">Taxes (9%)</span>
+<span class="font-bold text-on-surface">$1.80</span>
+</div>
+</div>
+<div class="pt-4 border-t border-surface-container flex justify-between items-end">
+<span class="text-sm font-bold uppercase tracking-widest text-on-surface-variant">Grand Total</span>
+<span class="text-3xl font-extrabold text-on-surface tracking-tighter">$24.30</span>
+</div>
+</section>
+<!-- Payment Method -->
+<section class="bg-primary/5 rounded-xl p-5 border border-primary/10 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-white p-2 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-primary" data-icon="credit_card">credit_card</span>
+</div>
+<div>
+<p class="text-[10px] font-bold text-primary uppercase tracking-wider">Paid via</p>
+<p class="font-bold text-on-surface">Visa **** 4242</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</section>
+<!-- Support CTA -->
+<div class="text-center py-4">
+<p class="text-xs text-on-surface-variant font-medium">Need help with this order?</p>
+<button class="text-primary text-xs font-bold uppercase mt-1 hover:underline">Contact Gusto Support</button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 pb-safe bg-white/90 backdrop-blur-md z-50 rounded-t-2xl shadow-[0_-4px_20px_0_rgba(0,0,0,0.05)]">
+<div class="flex flex-col items-center justify-center text-slate-400 px-3 py-1 hover:text-red-500 transition-transform active:scale-90">
+<span class="material-symbols-outlined" data-icon="restaurant">restaurant</span>
+<span class="font-['Plus_Jakarta_Sans'] font-semibold text-[10px] uppercase tracking-wider mt-1">Menu</span>
+</div>
+<div class="flex flex-col items-center justify-center text-red-600 bg-red-50 rounded-xl px-3 py-1 transition-transform active:scale-90">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-['Plus_Jakarta_Sans'] font-semibold text-[10px] uppercase tracking-wider mt-1">Orders</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 px-3 py-1 hover:text-red-500 transition-transform active:scale-90">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-['Plus_Jakarta_Sans'] font-semibold text-[10px] uppercase tracking-wider mt-1">Profile</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 px-3 py-1 hover:text-red-500 transition-transform active:scale-90">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="font-['Plus_Jakarta_Sans'] font-semibold text-[10px] uppercase tracking-wider mt-1">Help</span>
+</div>
+</nav>
+</body></html>

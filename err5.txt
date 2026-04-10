@@ -1,1 +1,0 @@
-{"error":"Le format renvoyé par l'IA n'est pas valide."}
