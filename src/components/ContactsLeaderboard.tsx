@@ -63,7 +63,6 @@ export function ContactsLeaderboard({ user, onNavigate }: ContactsLeaderboardPro
 
     // Podium: top 3
     const top3 = rankedContacts.slice(0, 3);
-    const restOfList = rankedContacts.slice(3);
 
     // Podium order: 2nd, 1st, 3rd
     const podiumOrder = top3.length >= 3
