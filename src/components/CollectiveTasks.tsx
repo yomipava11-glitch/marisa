@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { cacheSet, cacheGet, isOnline, formatCacheAge } from '../lib/offlineCache';
 import './CollectiveTasks.css';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
@@ -13,11 +14,29 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
     const [searchQuery, setSearchQuery] = useState('');
     const [activeFeedIndex, setActiveFeedIndex] = useState(0);
     const [seenTasks, setSeenTasks] = useState<Set<string>>(new Set());
+    const [offline, setOffline] = useState(!navigator.onLine);
+    const [cacheAge, setCacheAge] = useState<string | null>(null);
 
     useEffect(() => {
-        fetchCollectiveTasks();
-        fetchActivityFeed();
-        fetchPendingInvitesCount();
+        // Load cached data immediately
+        const cachedTasks = cacheGet<any[]>(`collective_tasks_${user.id}`);
+        if (cachedTasks) { setTasks(cachedTasks); setLoading(false); }
+        const cachedFeed = cacheGet<any[]>(`collective_feed_${user.id}`);
+        if (cachedFeed) setFeed(cachedFeed);
+
+        if (isOnline()) {
+            fetchCollectiveTasks();
+            fetchActivityFeed();
+            fetchPendingInvitesCount();
+        } else {
+            setLoading(false);
+            setCacheAge(formatCacheAge(`collective_tasks_${user.id}`));
+        }
+
+        const goOnline = () => { setOffline(false); fetchCollectiveTasks(); fetchActivityFeed(); fetchPendingInvitesCount(); };
+        const goOffline = () => { setOffline(true); setCacheAge(formatCacheAge(`collective_tasks_${user.id}`)); };
+        window.addEventListener('online', goOnline);
+        window.addEventListener('offline', goOffline);
 
         // Subscribe to realtime feed updates
         const channel = supabase.channel('public:flux_activite')
@@ -30,6 +49,8 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
             .subscribe();
 
         return () => {
+            window.removeEventListener('online', goOnline);
+            window.removeEventListener('offline', goOffline);
             supabase.removeChannel(channel).catch(() => { });
         };
     }, []);
@@ -65,7 +86,10 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
             .neq('statut', 'supprimee')
             .or(orClause);
 
-        if (data) setTasks(data);
+        if (data) {
+            setTasks(data);
+            cacheSet(`collective_tasks_${user.id}`, data);
+        }
         setLoading(false);
     };
 
@@ -107,7 +131,10 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
             .order('cree_le', { ascending: false })
             .limit(10);
 
-        if (data) setFeed(data);
+        if (data) {
+            setFeed(data);
+            cacheSet(`collective_feed_${user.id}`, data);
+        }
         setLoading(false);
     };
 
@@ -141,6 +168,18 @@ export function CollectiveTasks({ user, onNavigate }: { user: any, onNavigate: (
 
     return (
         <div className="collective-container">
+            {offline && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999,
+                    background: 'linear-gradient(90deg, #f59e0b, #d97706)',
+                    color: '#000', textAlign: 'center',
+                    padding: '0.4rem 1rem', fontSize: '0.75rem', fontWeight: 700,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
+                }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>wifi_off</span>
+                    Mode hors-ligne {cacheAge ? `• Données ${cacheAge}` : ''}
+                </div>
+            )}
             {/* Header */}
             <header className="collective-header">
                 <button className="icon-button" onClick={() => onNavigate('back')}>

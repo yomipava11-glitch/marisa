@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../lib/supabase';
+import { cacheSet, cacheGet, isOnline, formatCacheAge } from '../lib/offlineCache';
 import confetti from 'canvas-confetti';
 import './Dashboard.css';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
@@ -12,6 +13,8 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
     const [weeklyStats, setWeeklyStats] = useState<{ dayName: string, count: number, isToday: boolean }[]>([]);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [isDragging, setIsDragging] = useState(false);
+    const [offline, setOffline] = useState(!navigator.onLine);
+    const [cacheAge, setCacheAge] = useState<string | null>(null);
 
     useEffect(() => {
         if (!isDragging) return;
@@ -59,9 +62,32 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
     }, [isDragging]);
 
     useEffect(() => {
-        fetchAdvice();
-        fetchTasks();
-        fetchStats();
+        // Load cached data immediately for instant display
+        const cachedTasks = cacheGet<any[]>(`dashboard_tasks_${user.id}`);
+        if (cachedTasks) {
+            setTasks(cachedTasks);
+            setLoading(false);
+        }
+        const cachedXP = cacheGet<number>(`dashboard_xp_${user.id}`);
+        if (cachedXP !== null) setTotalXP(cachedXP);
+        const cachedStats = cacheGet<any[]>(`dashboard_stats_${user.id}`);
+        if (cachedStats) setWeeklyStats(cachedStats);
+
+        // Then fetch fresh data if online
+        if (isOnline()) {
+            fetchAdvice();
+            fetchTasks();
+            fetchStats();
+        } else {
+            setLoading(false);
+            setCacheAge(formatCacheAge(`dashboard_tasks_${user.id}`));
+        }
+
+        // Listen for online/offline events
+        const goOnline = () => { setOffline(false); fetchTasks(); fetchStats(); };
+        const goOffline = () => { setOffline(true); setCacheAge(formatCacheAge(`dashboard_tasks_${user.id}`)); };
+        window.addEventListener('online', goOnline);
+        window.addEventListener('offline', goOffline);
 
         // Realtime subscription for tasks
         const channel = supabase.channel('public:taches')
@@ -71,6 +97,8 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
             .subscribe();
 
         return () => {
+            window.removeEventListener('online', goOnline);
+            window.removeEventListener('offline', goOffline);
             supabase.removeChannel(channel).catch(() => { });
         };
     }, []);
@@ -83,7 +111,9 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
             .eq('action', 'Terminer');
 
         if (data) {
-            setTotalXP(data.length * 10); // 10 XP per task
+            const xp = data.length * 10;
+            setTotalXP(xp);
+            cacheSet(`dashboard_xp_${user.id}`, xp); // 10 XP per task
 
             const stats = [];
             const today = new Date();
@@ -109,6 +139,7 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
                 });
             }
             setWeeklyStats(stats);
+            cacheSet(`dashboard_stats_${user.id}`, stats);
         }
     };
 
@@ -133,7 +164,10 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
             .neq('statut', 'supprimee')
             .order('cree_le', { ascending: false });
 
-        if (data) setTasks(data);
+        if (data) {
+            setTasks(data);
+            cacheSet(`dashboard_tasks_${user.id}`, data);
+        }
         setLoading(false);
     };
 
@@ -247,6 +281,18 @@ export function Dashboard({ user, onSignOut, onNavigate }: { user: any, onSignOu
 
     return (
         <div className="dashboard-container">
+            {offline && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999,
+                    background: 'linear-gradient(90deg, #f59e0b, #d97706)',
+                    color: '#000', textAlign: 'center',
+                    padding: '0.4rem 1rem', fontSize: '0.75rem', fontWeight: 700,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
+                }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>wifi_off</span>
+                    Mode hors-ligne {cacheAge ? `• Données ${cacheAge}` : ''}
+                </div>
+            )}
             <div className="dashboard-fixed-top">
                 {/* Header */}
                 <div className="header">

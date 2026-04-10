@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { cacheSet, cacheGet, isOnline } from '../lib/offlineCache';
 import './Notifications.css';
 
 interface NotificationItem {
@@ -11,14 +12,25 @@ interface NotificationItem {
     cree_le: string;
     utilisateur?: { nom?: string; avatar_url?: string };
     tache?: { titre?: string; est_collectif?: boolean };
+    isAlerte?: boolean; // for dynamically generated deadline alerts
 }
 
 export function Notifications({ user, onNavigate }: { user: any, onNavigate: (page: string, data?: any) => void }) {
     const [notifications, setNotifications] = useState<NotificationItem[]>([]);
     const [loading, setLoading] = useState(true);
+    const [deadlineAlerts, setDeadlineAlerts] = useState<NotificationItem[]>([]);
 
     useEffect(() => {
-        fetchNotifications();
+        // Load from cache first
+        const cached = cacheGet<NotificationItem[]>(`notifications_${user.id}`);
+        if (cached) { setNotifications(cached); setLoading(false); }
+
+        if (isOnline()) {
+            fetchNotifications();
+            fetchDeadlineAlerts();
+        } else {
+            setLoading(false);
+        }
 
         // Subscribe to new activity
         const channel = supabase.channel('public:flux_activite')
@@ -27,7 +39,11 @@ export function Notifications({ user, onNavigate }: { user: any, onNavigate: (pa
             })
             .subscribe();
 
+        const goOnline = () => { fetchNotifications(); fetchDeadlineAlerts(); };
+        window.addEventListener('online', goOnline);
+
         return () => {
+            window.removeEventListener('online', goOnline);
             supabase.removeChannel(channel).catch(() => { });
         };
     }, []);
@@ -83,12 +99,74 @@ export function Notifications({ user, onNavigate }: { user: any, onNavigate: (pa
             }
 
             // Only show actions that aren't exclusively "user created task" if they are the current user, to reduce noise.
-            // But for now, we'll format them nicely.
             setNotifications(data as unknown as NotificationItem[]);
+            cacheSet(`notifications_${user.id}`, data);
         } catch (err) {
             console.error(err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    // Generate deadline alerts dynamically from task dates
+    const fetchDeadlineAlerts = async () => {
+        try {
+            // Fetch all non-completed tasks where user is creator or member
+            const { data: myTasksRes } = await supabase
+                .from('taches')
+                .select('id, titre, date_echeance, createur_id')
+                .neq('statut', 'terminee')
+                .neq('statut', 'supprimee')
+                .not('date_echeance', 'is', null);
+
+            const { data: myMemberships } = await supabase
+                .from('membres_tache')
+                .select('tache_id')
+                .eq('utilisateur_id', user.id);
+
+            const memberTaskIds = new Set(myMemberships?.map(m => m.tache_id) || []);
+
+            const relevantTasks = (myTasksRes || []).filter((t: any) =>
+                t.createur_id === user.id || memberTaskIds.has(t.id)
+            );
+
+            const now = Date.now();
+            const in24h = now + 24 * 60 * 60 * 1000;
+            const alerts: NotificationItem[] = [];
+
+            for (const t of relevantTasks) {
+                const echeance = new Date(t.date_echeance).getTime();
+
+                if (echeance < now) {
+                    // Overdue
+                    alerts.push({
+                        id: `alert_overdue_${t.id}`,
+                        tache_id: t.id,
+                        utilisateur_id: user.id,
+                        action: 'Retard',
+                        details: {},
+                        cree_le: t.date_echeance,
+                        tache: { titre: t.titre },
+                        isAlerte: true,
+                    });
+                } else if (echeance < in24h) {
+                    // Warning: due within 24h
+                    alerts.push({
+                        id: `alert_warn_${t.id}`,
+                        tache_id: t.id,
+                        utilisateur_id: user.id,
+                        action: 'Avertissement',
+                        details: {},
+                        cree_le: t.date_echeance,
+                        tache: { titre: t.titre },
+                        isAlerte: true,
+                    });
+                }
+            }
+
+            setDeadlineAlerts(alerts);
+        } catch (err) {
+            console.error('Error fetching deadline alerts:', err);
         }
     };
 
@@ -107,7 +185,11 @@ export function Notifications({ user, onNavigate }: { user: any, onNavigate: (pa
         const userName = notif.utilisateur?.nom || 'Un utilisateur';
         const taskName = notif.tache?.titre || 'une tâche';
 
-        if (notif.action === 'Terminer') {
+        if (notif.action === 'Retard') {
+            return <span>⚠️ La tâche <em>{taskName}</em> est <strong>en retard</strong> !</span>;
+        } else if (notif.action === 'Avertissement') {
+            return <span>⏳ La tâche <em>{taskName}</em> arrive à échéance dans <strong>moins de 24h</strong>.</span>;
+        } else if (notif.action === 'Terminer') {
             return <span><strong>{userName}</strong> a terminé la tâche <em>{taskName}</em>.</span>;
         } else if (notif.action === 'Sous-tâche terminée') {
             const subtaskName = notif.details?.titre_sous_tache || 'une sous-tâche';
@@ -116,6 +198,12 @@ export function Notifications({ user, onNavigate }: { user: any, onNavigate: (pa
             return <span><strong>{userName}</strong> a créé la tâche <em>{taskName}</em>.</span>;
         } else if (notif.action === 'Rejoindre') {
             return <span><strong>{userName}</strong> a rejoint la tâche <em>{taskName}</em>.</span>;
+        } else if (notif.action === 'Nouveau log') {
+            const logType = notif.details?.type_log || '';
+            return <span>📝 <strong>{userName}</strong> a ajouté un log{logType ? ` (${logType})` : ''} dans <em>{taskName}</em>.</span>;
+        } else if (notif.action === 'Membre ajouté') {
+            const memberName = notif.details?.membre_nom || 'un membre';
+            return <span>👥 <strong>{memberName}</strong> a été ajouté(e) à <em>{taskName}</em>.</span>;
         } else if (notif.action === 'Suppression') {
             return <span><strong>{userName}</strong> a supprimé la tâche <em>{taskName}</em>.</span>;
         } else {
@@ -130,6 +218,10 @@ export function Notifications({ user, onNavigate }: { user: any, onNavigate: (pa
             case 'Création': return 'add_task';
             case 'Rejoindre': return 'group_add';
             case 'Suppression': return 'delete';
+            case 'Retard': return 'warning';
+            case 'Avertissement': return 'schedule';
+            case 'Nouveau log': return 'edit_note';
+            case 'Membre ajouté': return 'person_add';
             default: return 'notifications';
         }
     };
@@ -141,9 +233,16 @@ export function Notifications({ user, onNavigate }: { user: any, onNavigate: (pa
             case 'Création': return 'var(--color-primary)';
             case 'Rejoindre': return 'var(--color-warning)';
             case 'Suppression': return '#ef4444';
+            case 'Retard': return '#ef4444';
+            case 'Avertissement': return '#f59e0b';
+            case 'Nouveau log': return '#60a5fa';
+            case 'Membre ajouté': return '#a855f7';
             default: return 'var(--color-text)';
         }
     };
+
+    // Merge deadline alerts at the top, then activity notifications
+    const allNotifications = [...deadlineAlerts, ...notifications];
 
     return (
         <div className="notifications-container">
@@ -165,7 +264,7 @@ export function Notifications({ user, onNavigate }: { user: any, onNavigate: (pa
                         <span className="material-symbols-outlined spin-fast">sync</span>
                         <p>Chargement des notifications...</p>
                     </div>
-                ) : notifications.length === 0 ? (
+                ) : allNotifications.length === 0 ? (
                     <div className="notif-empty">
                         <span className="material-symbols-outlined empty-icon">notifications_off</span>
                         <p>Aucune notification pour le moment.</p>
@@ -173,8 +272,8 @@ export function Notifications({ user, onNavigate }: { user: any, onNavigate: (pa
                     </div>
                 ) : (
                     <div className="notif-list">
-                        {notifications.map((notif, index) => (
-                            <div className="notif-card" key={notif.id} style={{ animationDelay: `${index * 0.05}s` }}>
+                        {allNotifications.map((notif, index) => (
+                            <div className={`notif-card ${notif.isAlerte ? 'notif-alerte' : ''}`} key={notif.id} style={{ animationDelay: `${index * 0.05}s` }}>
                                 <div className="notif-avatar-container">
                                     {notif.utilisateur?.avatar_url ? (
                                         <img src={notif.utilisateur.avatar_url} alt="Avatar" className="notif-avatar" />

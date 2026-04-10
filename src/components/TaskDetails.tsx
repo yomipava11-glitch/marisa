@@ -135,6 +135,15 @@ export function TaskDetails({ task, onNavigate, user }: TaskDetailsProps) {
             if (newItemText === logContent) {
                  setNewItemText('');
             }
+            // Notify members via flux_activite
+            if (task.est_collectif) {
+                supabase.from('flux_activite').insert({
+                    tache_id: task.id,
+                    utilisateur_id: user.id,
+                    action: 'Nouveau log',
+                    details: { type_log: logType }
+                }).then();
+            }
         } else {
             console.error('Erreur insertion log:', error);
         }

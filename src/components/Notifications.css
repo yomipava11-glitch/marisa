@@ -259,3 +259,15 @@
     color: #64748b !important;
     font-weight: 400 !important;
 }
+
+/* Deadline Alert Cards */
+.notif-alerte {
+    border-color: rgba(239, 68, 68, 0.4) !important;
+    background: rgba(239, 68, 68, 0.08) !important;
+    animation: fadeUpIn 0.5s ease forwards, alertPulse 3s ease-in-out infinite;
+}
+
+@keyframes alertPulse {
+    0%, 100% { border-color: rgba(239, 68, 68, 0.4); }
+    50% { border-color: rgba(245, 158, 11, 0.6); }
+}

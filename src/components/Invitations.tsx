@@ -100,7 +100,21 @@ export const Invitations: React.FC<{ onNavigate: (page: string) => void }> = ({ 
             // Update local state to remove the processed invitation
             setInvitations(prev => prev.filter(inv => inv.tache_id !== tacheId));
 
-            // If accepted, could trigger a notification down the line
+            // If accepted, log activity for notifications
+            if (accept) {
+                const { data: profile } = await supabase
+                    .from('profils')
+                    .select('nom')
+                    .eq('id', user.id)
+                    .single();
+
+                await supabase.from('flux_activite').insert({
+                    tache_id: tacheId,
+                    utilisateur_id: user.id,
+                    action: 'Membre ajouté',
+                    details: { membre_nom: profile?.nom || 'Utilisateur' }
+                });
+            }
         } catch (err: any) {
             console.error('Error responding to invitation:', err);
             alert(`Erreur lors de la réponse à l'invitation: ${err.message}`);
