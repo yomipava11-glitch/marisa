@@ -57,17 +57,6 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  if (!session) {
-    if (authMode === 'landing') {
-      return <LandingPage onLoginClick={() => setAuthMode('signin')} />;
-    }
-    return authMode === 'signin' ? (
-      <SignIn onToggleMode={() => setAuthMode('signup')} />
-    ) : (
-      <SignUp onToggleMode={() => setAuthMode('signin')} />
-    );
-  }
-
   // Setup PopState listener for browser and Android back button
   useEffect(() => {
     // If the app is loaded or refreshed with a deep stack, synchronize the browser's history
@@ -88,6 +77,17 @@ function App() {
     return () => window.removeEventListener('popstate', handlePopState);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (!session) {
+    if (authMode === 'landing') {
+      return <LandingPage onLoginClick={() => setAuthMode('signin')} />;
+    }
+    return authMode === 'signin' ? (
+      <SignIn onToggleMode={() => setAuthMode('signup')} />
+    ) : (
+      <SignUp onToggleMode={() => setAuthMode('signin')} />
+    );
+  }
 
   const handleNavigate = (page: string, data?: any) => {
     if (page === 'back') {
