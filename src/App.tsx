@@ -68,15 +68,36 @@ function App() {
     );
   }
 
-  const handleNavigate = (page: string, data?: any) => {
-    if (page === 'back') {
+  // Setup PopState listener for browser and Android back button
+  useEffect(() => {
+    // If the app is loaded or refreshed with a deep stack, synchronize the browser's history
+    if (navStack.length > 1 && window.history.length === 1) {
+      for (let i = 1; i < navStack.length; i++) {
+        window.history.pushState({ page: navStack[i].page }, '', '');
+      }
+    }
+
+    const handlePopState = () => {
       setNavStack(prev => {
         if (prev.length <= 1) return prev;
         return prev.slice(0, -1);
       });
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleNavigate = (page: string, data?: any) => {
+    if (page === 'back') {
+      // Use the browser's native back to trigger popstate!
+      window.history.back();
       return;
     }
 
+    // Push new history state
+    window.history.pushState({ page }, '', '');
     setNavStack(prev => [...prev, { page, data }]);
   };
 
